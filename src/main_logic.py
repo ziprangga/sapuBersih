@@ -75,8 +75,6 @@ class SapuBersihLogic:
 
     # Menghentikan aplikasi yang berjalan
     def kill_processes(self, processes):
-        # use_sudo = self.ui.is_sudo_checked()
-        # print(use_sudo)
         for process in processes:
             pid = process.split()[0]
             # komentar ini jika menggunakan fitur sudo
@@ -87,20 +85,6 @@ class SapuBersihLogic:
                 self.ui.show_message(
                     f"Failed to kill process with PID: {pid}. It may have already stopped."
                 )
-            # #Jika ingin menambahkan fitur agar aplikasi bisa menghentikan semua proses tanpa terkecuali
-            # self.ui.show_message(
-            #     f"Failed to kill process with PID: {pid}. It may have already stopped."
-            # )
-            # try:
-            #     # if use_sudo:
-            #     subprocess.run(["sudo", "kill", pid], check=True)
-            #     self.ui.show_message(
-            #         f"Successfully killed process {pid} with Admin priviledge(sudo)."
-            #     )
-            # except subprocess.CalledProcessError:
-            #     self.ui.show_message(
-            #         f"Failed to kill process with PID: {pid}. It may have already stopped. try check Activity Monitor"
-            #     )
 
     # Menjalankan perintah pencarian file yang terkait dengan aplikasi
     def clean_application(self, app_path):
@@ -345,20 +329,10 @@ class SapuBersihLogic:
                     f"Unexpected error while deleting: {path}\nError: {str(e)}",
                 )
 
-        # Hapus item yang berhasil dari TreeWidget
-        # for item in items_to_delete:
-        #     index = self.ui.tree.indexOfTopLevelItem(item)
-        #     self.ui.tree.takeTopLevelItem(index)
         for item in success_items:
             index = self.ui.tree.indexOfTopLevelItem(item)
             self.ui.tree.takeTopLevelItem(index)
 
-        # if success_count > 0:
-        #     QMessageBox.information(
-        #         self.ui,
-        #         "Success",
-        #         f"{success_count} files/folders successfully moved to trash.",
-        #     )
         if success_items:
             QMessageBox.information(
                 self.ui,
