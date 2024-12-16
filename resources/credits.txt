@@ -7,7 +7,7 @@ The app’s interface is kept simple using Python, with the main goal of helping
 
 If you're interested in using or even developing this app, feel free to download it. The source code and release versions are available on GitHub.
 
-Source Code: https://github.com/ziprangga
+Source Code: https://github.com/ziprangga/sapuBersih
 
 Endless thanks to Sunknudsen—check out his GitHub here:
 https://github.com/sunknudsen/privacy-guides/tree/master/how-to-clean-uninstall-macos-apps-using-appcleaner-open-source-alternative
