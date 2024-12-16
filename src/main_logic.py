@@ -2,9 +2,9 @@ import os
 import subprocess
 from PySide6.QtWidgets import (
     QFileDialog,
-    QMessageBox,
 )
 from pathlib import Path
+from src.utility import RECEIPT_PATH
 
 
 class SapuBersihLogic:
@@ -21,9 +21,11 @@ class SapuBersihLogic:
                 self.clean_application(app_path)
                 # Jika proses tidak diizinkan, hentikan eksekusi
             else:
-                QMessageBox.critical(
-                    self, "Invalid Selection", "Please select a valid .app file."
-                )
+                if not Path(app_path).is_dir() or not app_path.endswith(".app"):
+                    self.ui.show_error(
+                        "Invalid File", "Selected file is not a valid .app bundle."
+                    )
+                    return
         else:
             # Logika untuk membuka dialog file
             app_path, _ = QFileDialog.getOpenFileName(
@@ -39,24 +41,17 @@ class SapuBersihLogic:
     def handle_running_processes(self, app_name):
         processes = self.get_running_processes(app_name)
         if processes:
-            reply = QMessageBox.question(
-                self.ui,
-                "Running Processes",
+            if self.ui.show_question(
                 f"Running processes found:\n\n{chr(10).join(processes)}\n\nKill these processes?",
-                QMessageBox.Yes | QMessageBox.No,
-            )
-            if reply == QMessageBox.Yes:
+            ):
                 self.kill_processes(processes)
-                QMessageBox.information(
-                    self.ui, "Success", "All selected processes have been killed."
-                )
             else:
-                QMessageBox.information(
-                    self.ui,
+                self.ui.show_message(
                     "Info",
                     "The application is still running. Please close it manually.",
                 )
                 return False
+
         return True
 
     # Cek aplikasi yang berjalan termasuk aplikasi yang akan di delete
@@ -78,7 +73,7 @@ class SapuBersihLogic:
                 subprocess.run(["kill", pid], check=True)
                 self.ui.show_message(f"Successfully killed process with PID: {pid}")
             except subprocess.CalledProcessError:
-                self.ui.show_message(
+                self.ui.show_error(
                     f"Failed to kill process with PID: {pid}. It may have already stopped."
                 )
 
@@ -89,7 +84,7 @@ class SapuBersihLogic:
         # Ambil bundle identifier
         bundle_identifier = self.get_bundle_identifier(app_path)
         if not bundle_identifier:
-            QMessageBox.critical(self.ui, "Error", "Cannot find app bundle identifier.")
+            self.ui.show_error("Error", "Cannot find app bundle identifier.")
             return
 
         # Dapatkan nama aplikasi
@@ -120,20 +115,22 @@ class SapuBersihLogic:
                 stderr=subprocess.STDOUT,
             )
             return output.decode().strip()
-        except subprocess.CalledProcessError:
-            return None
+        except subprocess.CalledProcessError as e:
+            self.ui.show_error("Error", f"Failed to fetch bundle identifier: {str(e)}")
+        except FileNotFoundError as e:
+            self.ui.show_error("Error", f"Info.plist not found: {str(e)}")
+        return None
 
     # Pencarian berdasarkan direktori cache (.bom) atau log aplikasi jika ditemukan akan di simpan di desktop
     def find_and_save_bom_logs(self, app_name, bundle_identifier):
-        base_path = Path("/private/var/db/receipts")
-        paths = []
 
+        paths = []
         # Cari .bom files untuk app_name
-        for path in base_path.rglob(f"*{app_name}*.bom"):
+        for path in RECEIPT_PATH.rglob(f"*{app_name}*.bom"):
             paths.append(str(path))
 
         # Cari .bom files untuk bundle_identifier
-        for path in base_path.rglob(f"*{bundle_identifier}*.bom"):
+        for path in RECEIPT_PATH.rglob(f"*{bundle_identifier}*.bom"):
             paths.append(str(path))
 
         # Hapus duplikat
@@ -157,11 +154,13 @@ class SapuBersihLogic:
                             stdout=bom_log_file,
                             check=True,
                         )
-                    print(f"Saved: {bom_log_path}")
+                    self.ui.show_message(f"Saved: {bom_log_path}")
                 except subprocess.CalledProcessError as e:
-                    print(f"Error processing {path}: {e}")
+                    self.ui.show_error("Error", f"Failed to process BOM log: {str(e)}")
+                except FileNotFoundError as e:
+                    self.ui.show_error("Error", f"BOM file not found: {str(e)}")
         else:
-            print("No .bom files found.")
+            self.ui.show_message("No .bom files found.")
 
     # Pencarian pada direktori yang terkait
     def find_app_data(self, app_name, bundle_identifier):
@@ -216,21 +215,21 @@ class SapuBersihLogic:
             Path(get_darwin_user_temp_dir()),  # Dari getconf
         ]
 
-        paths = []
+        paths = set()
 
         # Cari berdasarkan app_name dan bundle_identifier di setiap lokasi
         for location in locations:
+            self.ui.update_status(f"Searching in {location}...")
             if location.exists() and location.is_dir():
                 # Mencari file atau folder yang cocok dengan app_name
-                for match in location.rglob(f"*{app_name}*"):
-                    paths.append(str(match))
+                paths.update(str(match) for match in location.rglob(f"*{app_name}*"))
 
                 # Mencari file atau folder yang cocok dengan bundle_identifier
-                for match in location.rglob(f"*{bundle_identifier}*"):
-                    paths.append(str(match))
-
-        # Menyaring hasil untuk menerima lokasi unik saja
-        return list(set(paths))
+                paths.update(
+                    str(match) for match in location.rglob(f"*{bundle_identifier}*")
+                )
+            self.ui.stop_update_status()
+        return list(paths)
 
     # Membuka lokasi file yang telah ditemukan dan ada di list
     def open_selected_location(self, item, column):
@@ -248,9 +247,9 @@ class SapuBersihLogic:
                     ["osascript", "-e", 'tell application "Finder" to activate']
                 )
             except Exception as e:
-                QMessageBox.critical(self, "Error", f"Failed to open location: {e}")
+                self.ui.show_error("Error", f"Failed to open location: {e}")
         else:
-            QMessageBox.critical(self, "Error", f"Path not found: {selected_path}")
+            self.ui.show_error("Error", f"Path not found: {selected_path}")
 
     # Memindahkan file/folder ke trash secara keseluruhan atau yang dipilih
     def move_to_trash(self):
@@ -268,8 +267,8 @@ class SapuBersihLogic:
         )
 
         if not items_to_delete:
-            QMessageBox.warning(
-                self.ui, "No Items", "No files/folders available to move to trash."
+            self.ui.show_message(
+                "No Items", "No files/folders available to move to trash."
             )
             return
 
@@ -279,59 +278,53 @@ class SapuBersihLogic:
             if selected_items
             else f"Move all {len(items_to_delete)} files/folders to trash?"
         )
-        confirm = QMessageBox.question(
-            self.ui, "Confirmation", confirm_message, QMessageBox.Yes | QMessageBox.No
-        )
-        if confirm == QMessageBox.No:
+        confirm = self.ui.show_question(self.ui, confirm_message)
+        if confirm:
+
+            success_items = []
+            # success_count = 0
+            for item in items_to_delete:
+                path = item.text(0)
+                if not os.path.exists(path):
+                    self.ui.show_error("Invalid Path", f"Path does not exist: {path}")
+                    continue
+                if not os.access(path, os.W_OK):
+                    self.ui.show_error(
+                        "Permission Denied", f"No permission to delete: {path}"
+                    )
+                    continue
+
+                try:
+                    # Kirim file/folder ke Trash menggunakan AppleScript
+                    subprocess.run(
+                        [
+                            "osascript",
+                            "-e",
+                            f'tell application "Finder" to delete POSIX file "{path}"',
+                        ],
+                        check=True,
+                    )
+                    success_items.append(item)  # Tambahkan item ke daftar keberhasilan
+                    # success_count += 1
+                except subprocess.CalledProcessError as e:
+                    self.ui.show_error(
+                        "Error",
+                        f"Failed to move to trash: {path}\nError: {str(e)}",
+                    )
+                except Exception as e:
+                    self.ui.show_error(
+                        "Error",
+                        f"Unexpected error while deleting: {path}\nError: {str(e)}",
+                    )
+        else:
             return
-
-        success_items = []
-        # success_count = 0
-        for item in items_to_delete:
-            path = item.text(0)
-            if not os.path.exists(path):
-                QMessageBox.warning(
-                    self.ui, "Invalid Path", f"Path does not exist: {path}"
-                )
-                continue
-            if not os.access(path, os.W_OK):
-                QMessageBox.critical(
-                    self.ui, "Permission Denied", f"No permission to delete: {path}"
-                )
-                continue
-
-            try:
-                # Kirim file/folder ke Trash menggunakan AppleScript
-                subprocess.run(
-                    [
-                        "osascript",
-                        "-e",
-                        f'tell application "Finder" to delete POSIX file "{path}"',
-                    ],
-                    check=True,
-                )
-                success_items.append(item)  # Tambahkan item ke daftar keberhasilan
-                # success_count += 1
-            except subprocess.CalledProcessError as e:
-                QMessageBox.critical(
-                    self.ui,
-                    "Error",
-                    f"Failed to move to trash: {path}\nError: {str(e)}",
-                )
-            except Exception as e:
-                QMessageBox.critical(
-                    self.ui,
-                    "Error",
-                    f"Unexpected error while deleting: {path}\nError: {str(e)}",
-                )
 
         for item in success_items:
             index = self.ui.tree.indexOfTopLevelItem(item)
             self.ui.tree.takeTopLevelItem(index)
 
         if success_items:
-            QMessageBox.information(
-                self.ui,
+            self.ui.show_message(
                 "Success",
                 f"{len(success_items)} files/folders successfully moved to trash.",
             )

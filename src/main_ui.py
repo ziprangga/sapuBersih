@@ -6,16 +6,19 @@ from PySide6.QtWidgets import (
     QMessageBox,
     QTreeWidget,
     QFileIconProvider,
+    QLabel,
+    QApplication,
 )
 from PySide6.QtCore import Qt, QFileInfo
 from PySide6.QtGui import QIcon
 from src.main_logic import SapuBersihLogic
 from src.menu_ui import MenuBar
-from src.utility import resource_path
+from src.utility import resource_path, ERROR_TITLE
 
 
 # User Interface
 class SapuBersihUI(QMainWindow, gui.main_window.Ui_MainWindow):
+
     def __init__(self):
         super().__init__()
         self.setupUi(self)
@@ -25,8 +28,19 @@ class SapuBersihUI(QMainWindow, gui.main_window.Ui_MainWindow):
         # Atur menu bar
         self.setMenuBar(MenuBar(self))
 
+        self.status_label = QLabel()
+        self.stop_update = False
+
         # Atur ikon aplikasi
-        self.setWindowIcon(QIcon(resource_path("resources/sapu_bersih.icns")))
+        icon_path = resource_path("resources/sapu_bersih.icns")
+        if os.path.exists(icon_path):
+            self.setWindowIcon(QIcon(icon_path))
+        else:
+            print(f"Warning: Icon not found at {icon_path}")
+
+        self.status_label = QLabel("Ready")
+        self.status_label.setAlignment(Qt.AlignLeft)
+        self.statusBar().addWidget(self.status_label)
 
         # Menghubungkan sinyal ke slot
         self.browse_button.clicked.connect(self.logic.browse_application)
@@ -59,21 +73,14 @@ class SapuBersihUI(QMainWindow, gui.main_window.Ui_MainWindow):
     # Menangkap .app saat drop
     def dropEvent(self, event):
         if event.mimeData().hasUrls():
-            paths = [
-                url.toLocalFile().strip()
-                for url in event.mimeData().urls()
-                if url.isLocalFile()
-            ]
-
+            paths = [url.toLocalFile().strip() for url in event.mimeData().urls()]
             for path in paths:
-                path = path.rstrip("/")  # Bersihkan trailing slash
+                path = path.rstrip("/")
                 if self.is_valid_app_path(path):
                     self.logic.browse_application(app_path=path)
                 else:
                     QMessageBox.warning(
-                        self,
-                        "Unsupported File",
-                        f"'{path}' is not a valid .app file.",
+                        self, "Unsupported File", f"'{path}' is not a valid .app file."
                     )
             event.acceptProposedAction()
         else:
@@ -109,3 +116,25 @@ class SapuBersihUI(QMainWindow, gui.main_window.Ui_MainWindow):
         item = QTreeWidgetItem(["No files or folders found.", ""])
         item.setFlags(Qt.ItemIsEnabled)
         self.tree.addTopLevelItem(item)
+
+    def show_message(self, message, icon=QMessageBox.Information):
+        QMessageBox(icon, ERROR_TITLE, message, QMessageBox.Ok, self).exec()
+
+    def show_error(self, message):
+        self.show_message(message, QMessageBox.Critical)
+
+    def show_question(self, message):
+        reply = QMessageBox.question(
+            self, ERROR_TITLE, message, QMessageBox.Yes | QMessageBox.No
+        )
+        return reply == QMessageBox.Yes
+
+    def update_status(self, message):
+        """Update status bar or label with a message."""
+        self.status_label.setText(message)
+        QApplication.processEvents()
+        if self.stop_update:
+            self.status_label.clear()  # Bersihkan status label jika update dihentikan
+
+    def stop_update_status(self):
+        self.stop_update = True
