@@ -1,0 +1,24 @@
+{
+  // ++++++++++++++Python Programming+++++++++++++++++++++++++
+
+  // Defines type of the language server.
+  "python.languageServer": "Pylance",
+
+  // Formatters - remember to install extensions for these to work
+  "[python]": { "editor.defaultFormatter": "ms-python.black-formatter" },
+  "[json]": { "editor.defaultFormatter": "vscode.json-language-features" },
+  "[jsonc]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[yaml]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  // "[dockerfile]": { "editor.defaultFormatter": "foxundermoon.shell-format" },
+  "[markdown]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+
+  // Render vertical rulers after 88 characters. This aligns with Black.
+  "editor.rulers": [88],
+
+  // Render vertical rulers after 50 and 72 characters when showing the git commit
+  // message editor. 50 characters is the suggested max length for the title and 72
+  // characters is for the message body.
+  "[git-commit]": { "editor.rulers": [50, 72] }
+}
