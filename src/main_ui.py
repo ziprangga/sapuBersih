@@ -37,11 +37,6 @@ class SapuBersihUI(QMainWindow, gui.main_window.Ui_MainWindow):
         # multi selection
         self.tree.setSelectionMode(QTreeWidget.MultiSelection)
 
-        # Mengubah cursor saat mouse berada di atas tombol browse_button
-        self.browse_button.setCursor(
-            Qt.PointingHandCursor
-        )  # Mengubah cursor menjadi tangan (hand cursor)
-
         # Mengubah cursor ketika berada di atas tombol browse
         if self.browse_button:
             self.browse_button.setCursor(Qt.PointingHandCursor)
