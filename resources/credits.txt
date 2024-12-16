@@ -1,5 +1,5 @@
 Program: sapuBersih
-Author: Zi
+Author: zi
 
 This app was built using open-source components and inspired by privacy guides from Sunknudsen. Some of the scripts in this app adapt references from his guides, so I want to give him a big thank you!
 
