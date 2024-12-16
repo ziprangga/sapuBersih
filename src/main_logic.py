@@ -3,10 +3,6 @@ import subprocess
 from PySide6.QtWidgets import (
     QFileDialog,
     QMessageBox,
-    QScrollArea,
-    QVBoxLayout,
-    QLabel,
-    QWidget,
 )
 from pathlib import Path
 

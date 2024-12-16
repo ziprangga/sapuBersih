@@ -15,7 +15,7 @@
   },
 
   // Render vertical rulers after 88 characters. This aligns with Black.
-  "editor.rulers": [88],
+  // "editor.rulers": [88],
 
   // Render vertical rulers after 50 and 72 characters when showing the git commit
   // message editor. 50 characters is the suggested max length for the title and 72
