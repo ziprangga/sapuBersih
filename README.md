@@ -7,7 +7,7 @@ This app was built using open-source components and inspired by privacy guides f
 The app’s interface is kept simple using Python, with the main goal of helping my beloved wife and friends who rarely use the terminal on macOS. On top of that, this project also serves as a way for me to dive deeper into Python.
 If you're interested in using or even developing this app, feel free to download it.
 
-## "If you want to compile it yourself, don't forget to use PySide6."
+#### "If you want to compile it yourself, don't forget to use PySide6."
 
 ---
 
