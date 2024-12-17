@@ -331,59 +331,68 @@ class SapuBersihLogic:
             )
 
     # scan residu
-    def get_installed_apps():
-        """Mendapatkan daftar aplikasi yang terinstal di macOS"""
-        app_dirs = [Path("/Applications"), Path.home() / "Applications"]
+    def get_installed_apps(self):
+        """
+        Mendapatkan daftar aplikasi yang terinstal dari /Applications dan ~/Applications.
+        """
+        apps_dir = [
+            Path.home() / "Applications",
+            Path("/Applications"),
+        ]
         installed_apps = set()
-
-        for app_dir in app_dirs:
-            if app_dir.exists():
-                for app in app_dir.glob("*.app"):
-                    installed_apps.add(
-                        app.stem.lower()
-                    )  # Ambil nama aplikasi (tanpa ekstensi)
+        for directory in apps_dir:
+            if directory.exists():
+                for app in directory.glob("*.app"):
+                    installed_apps.add(app.stem.lower())  # Ambil nama aplikasi
         return installed_apps
 
-    def find_residual_files(installed_apps):
-        """Menemukan file cache dan preferences yang tidak terhubung ke aplikasi terinstal"""
-        cache_dir = Path.home() / "Library" / "Caches"
-        pref_dir = Path.home() / "Library" / "Preferences"
+    def is_apple_app(self, app_path):
+        """
+        Periksa apakah aplikasi berasal dari Apple menggunakan metadata.
+        """
+        try:
+            # Jalankan perintah 'mdls' untuk mendapatkan metadata aplikasi
+            result = subprocess.run(
+                ["mdls", "-name", "kMDItemCFBundleIdentifier", str(app_path)],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.DEVNULL,
+                text=True,
+            )
+            # Ambil output CFBundleIdentifier
+            output = result.stdout.strip()
+            if "com.apple" in output:  # Aplikasi dari Apple memiliki prefix 'com.apple'
+                return True
+        except Exception as e:
+            print(f"Error checking metadata for {app_path}: {e}")
+        return False
 
-        residual_files = []
+    def scan_residual(self):
+        self.ui.clear_tree()
+        # Dapatkan daftar aplikasi yang terinstal
+        installed_apps = self.get_installed_apps()
 
-        # Cari file cache
-        print("🔍 Mencari file cache residu...")
-        for item in cache_dir.iterdir():
-            if not any(app in item.name.lower() for app in installed_apps):
-                residual_files.append(item)
+        # Direktori untuk pemindaian residu
+        locations = [
+            Path.home() / "Library/Caches",
+            Path.home() / "Library/Preferences",
+            Path("/Library/Caches"),
+            Path("/Library/Preferences"),
+        ]
 
-        # Cari file preferences
-        print("\n🔍 Mencari file preferences residu...")
-        for pref_file in pref_dir.glob("*.plist"):
-            if not any(app in pref_file.name.lower() for app in installed_apps):
-                residual_files.append(pref_file)
+        residu = set()
+        # Pindai folder Cache & preference
+        for item in locations:
+            self.ui.update_status(f"Searching in {item}...")
+            if item.is_dir() or item.is_file() or item.glob("*.plist"):
+                if self.is_apple_app(item):
+                    print(f"Skipping Apple app: {item}, Bundle ID: {item.bundle_id}")
+                    continue
+                if not any(app in item.name.lower() for app in installed_apps):
+                    residu.add(str(item))  # Tambahkan path ke set
+                    print(f"Residual detected: {item}")
+                    self.ui.add_tree_item(str(item), True)  # True untuk writable
+                else:
+                    print(f"Skipped (installed app): {item}")
+            self.ui.stop_update_status()
 
-        return residual_files
-
-    def list_residual_files(residual_files):
-        """Menampilkan daftar file residu"""
-        print("\n📋 Daftar file residu yang ditemukan:")
-        for index, file in enumerate(residual_files, start=1):
-            print(f"{index}. {file}")
-
-    def confirm_and_delete(residual_files):
-        """Konfirmasi pengguna dan menghapus file residu jika disetujui"""
-        confirm = input("\nApakah ingin menghapus semua file residu ini? (y/n): ")
-        if confirm.lower() == "y":
-            for file in residual_files:
-                try:
-                    if file.is_dir():
-                        shutil.rmtree(file)
-                    else:
-                        file.unlink()
-                    print(f"✅ File dihapus: {file}")
-                except Exception as e:
-                    print(f"❌ Gagal menghapus {file}: {e}")
-            print("\n🎉 Pembersihan selesai!")
-        else:
-            print("\n❌ Pembersihan dibatalkan. Tidak ada file yang dihapus.")
+        return list(residu)
