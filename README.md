@@ -1,6 +1,6 @@
 # 🧹 sapuBersih
 
-**sapuBersih** is a macOS cleanup tool designed to help you safely remove application-related files or folders from your system. It provides intuitive features like drag-and-drop support, Finder automation, and log file analysis.
+**sapuBersih** is a cleanup tool designed to safely remove applications and their associated files or folders from the macOS system.
 
 This app was built using open-source components and inspired by privacy guides from Sunknudsen (https://github.com/sunknudsen/privacy-guides/tree/master/how-to-clean-uninstall-macos-apps-using-appcleaner-open-source-alternative). Some of the scripts in this app adapt references from his guides, so I want to give him a big thank you!
 
@@ -115,9 +115,9 @@ sapuBersih can also search for log files to help with more thorough cleanup.
 
 ## 📸 Screenshot
 
-![sapuBersih in Action](<img width="500" alt="sapuBersih UI" src="https://github.com/user-attachments/assets/33125b09-27a3-4924-85a0-533ef3f48869" />
+<img width="500" alt="sapuBersih UI" src="https://github.com/user-attachments/assets/33125b09-27a3-4924-85a0-533ef3f48869" />
 
-<img width="500" alt="list found file or folder" src="https://github.com/user-attachments/assets/e387cb57-5d99-41f5-a09e-d40768f6045a" /> <img width="500" alt="select or not" src="https://github.com/user-attachments/assets/f54c5c4c-c443-4908-8f26-b01309d7cd20" />)
+<img width="500" alt="list found file or folder" src="https://github.com/user-attachments/assets/e387cb57-5d99-41f5-a09e-d40768f6045a" /> <img width="500" alt="select or not" src="https://github.com/user-attachments/assets/f54c5c4c-c443-4908-8f26-b01309d7cd20" />
 
 ---
 
