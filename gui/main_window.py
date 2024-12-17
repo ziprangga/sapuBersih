@@ -118,7 +118,9 @@ class Ui_MainWindow(object):
         self.scan_button.setText(QCoreApplication.translate("MainWindow", "Scan", None))
         self.tree.setHeaderLabels(
             [
-                QCoreApplication.translate("MainWindow", "File/Folder Path", None),
+                QCoreApplication.translate("MainWindow", "File/Folder", None),
+                QCoreApplication.translate("MainWindow", "Path", None),
+                QCoreApplication.translate("MainWindow", "Category", None),
                 QCoreApplication.translate("MainWindow", "Status", None),
             ]
         )

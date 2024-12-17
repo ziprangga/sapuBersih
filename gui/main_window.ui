@@ -39,7 +39,9 @@
      <widget class="QTreeWidget" name="tree">
       <property name="headerLabels">
        <stringlist>
-        <string>File/Folder Path</string>
+        <string>File/Folder</string>
+        <string>Path</string>
+        <string>Category</string>
         <string>Status</string>
        </stringlist>
       </property>

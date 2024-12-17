@@ -98,12 +98,12 @@ class SapuBersihUI(QMainWindow, gui.main_window.Ui_MainWindow):
     def clear_tree(self):
         self.tree.clear()
 
-    def add_tree_item(self, category, name, full_path, writable):
+    def add_tree_item(self, name, path, category, writable):
         status = "Accessible" if writable else "Read-Only"
 
         # Menggunakan QFileIconProvider untuk mendapatkan ikon file atau direktori
         icon_provider = QFileIconProvider()
-        file_info = QFileInfo(full_path)
+        file_info = QFileInfo(path)
 
         # Tentukan apakah path adalah direktori atau file
         if file_info.isDir():
@@ -111,7 +111,7 @@ class SapuBersihUI(QMainWindow, gui.main_window.Ui_MainWindow):
         else:
             icon = icon_provider.icon(QFileIconProvider.File)
 
-        item = QTreeWidgetItem([category, name, full_path, status])
+        item = QTreeWidgetItem([name, path, category, status])
         item.setIcon(0, icon)  # Gunakan ikon yang didapat dari QFileIconProvider
         self.tree.addTopLevelItem(item)
 
@@ -121,11 +121,11 @@ class SapuBersihUI(QMainWindow, gui.main_window.Ui_MainWindow):
         item.setFlags(Qt.ItemIsEnabled)
         self.tree.addTopLevelItem(item)
 
-    def show_message(self, message, icon=QMessageBox.Information):
-        QMessageBox(icon, ERROR_TITLE, message, QMessageBox.Ok, self).exec()
+    def show_message(self, title, message, icon=QMessageBox.Information):
+        QMessageBox(icon, title, message, QMessageBox.Ok, self).exec()
 
-    def show_error(self, message):
-        self.show_message(message, QMessageBox.Critical)
+    def show_error(self, message, title=ERROR_TITLE):
+        self.show_message(title, message, QMessageBox.Critical)
 
     def show_question(self, message):
         reply = QMessageBox.question(

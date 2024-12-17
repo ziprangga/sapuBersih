@@ -71,7 +71,9 @@ class SapuBersihLogic:
             # komentar ini jika menggunakan fitur sudo
             try:
                 subprocess.run(["kill", pid], check=True)
-                self.ui.show_message(f"Successfully killed process with PID: {pid}")
+                self.ui.show_message(
+                    "Success", f"Successfully killed process with PID: {pid}"
+                )
             except subprocess.CalledProcessError:
                 self.ui.show_error(
                     f"Failed to kill process with PID: {pid}. It may have already stopped."
@@ -84,7 +86,7 @@ class SapuBersihLogic:
         # Ambil bundle identifier
         bundle_identifier = self.get_bundle_identifier(app_path)
         if not bundle_identifier:
-            self.ui.show_error("Error", "Cannot find app bundle identifier.")
+            self.ui.show_error("Cannot find app bundle identifier.")
             return
 
         # Dapatkan nama aplikasi
@@ -97,7 +99,9 @@ class SapuBersihLogic:
 
         if related_paths:
             for path in related_paths:
-                self.ui.add_tree_item(path, os.access(path, os.W_OK))
+                self.ui.add_tree_item(
+                    app_name, path, bundle_identifier, os.access(path, os.W_OK)
+                )
         else:
             self.ui.add_placeholder_item()
 
@@ -116,9 +120,9 @@ class SapuBersihLogic:
             )
             return output.decode().strip()
         except subprocess.CalledProcessError as e:
-            self.ui.show_error("Error", f"Failed to fetch bundle identifier: {str(e)}")
+            self.ui.show_error(f"Failed to fetch bundle identifier: {str(e)}")
         except FileNotFoundError as e:
-            self.ui.show_error("Error", f"Info.plist not found: {str(e)}")
+            self.ui.show_error(f"Info.plist not found: {str(e)}")
         return None
 
     # Pencarian berdasarkan direktori cache (.bom) atau log aplikasi jika ditemukan akan di simpan di desktop
@@ -154,13 +158,13 @@ class SapuBersihLogic:
                             stdout=bom_log_file,
                             check=True,
                         )
-                    self.ui.show_message(f"Saved: {bom_log_path}")
+                    self.ui.show_message("Info", f"Saved: {bom_log_path}")
                 except subprocess.CalledProcessError as e:
-                    self.ui.show_error("Error", f"Failed to process BOM log: {str(e)}")
+                    self.ui.show_error(f"Failed to process BOM log: {str(e)}")
                 except FileNotFoundError as e:
-                    self.ui.show_error("Error", f"BOM file not found: {str(e)}")
+                    self.ui.show_error(f"BOM file not found: {str(e)}")
         else:
-            self.ui.show_message("No .bom files found.")
+            self.ui.show_message("Info", "No .bom files found.")
 
     # Pencarian pada direktori yang terkait
     def find_app_data(self, app_name, bundle_identifier):
@@ -233,7 +237,7 @@ class SapuBersihLogic:
 
     # Membuka lokasi file yang telah ditemukan dan ada di list
     def open_selected_location(self, item, column):
-        selected_path = item.text(2)
+        selected_path = item.text(1)
         if os.path.exists(selected_path):
             try:
                 subprocess.run(
@@ -247,9 +251,9 @@ class SapuBersihLogic:
                     ["osascript", "-e", 'tell application "Finder" to activate']
                 )
             except Exception as e:
-                self.ui.show_error("Error", f"Failed to open location: {e}")
+                self.ui.show_error(f"Failed to open location: {e}")
         else:
-            self.ui.show_error("Error", f"Path not found: {selected_path}")
+            self.ui.show_error(f"Path not found: {selected_path}")
 
     # Memindahkan file/folder ke trash secara keseluruhan atau yang dipilih
     def move_to_trash(self):
@@ -278,13 +282,13 @@ class SapuBersihLogic:
             if selected_items
             else f"Move all {len(items_to_delete)} files/folders to trash?"
         )
-        confirm = self.ui.show_question(self.ui, confirm_message)
+        confirm = self.ui.show_question(confirm_message)
         if confirm:
 
             success_items = []
             # success_count = 0
             for item in items_to_delete:
-                path = item.text(0)
+                path = item.text(1)
                 if not os.path.exists(path):
                     self.ui.show_error("Invalid Path", f"Path does not exist: {path}")
                     continue
@@ -308,12 +312,10 @@ class SapuBersihLogic:
                     # success_count += 1
                 except subprocess.CalledProcessError as e:
                     self.ui.show_error(
-                        "Error",
                         f"Failed to move to trash: {path}\nError: {str(e)}",
                     )
                 except Exception as e:
                     self.ui.show_error(
-                        "Error",
                         f"Unexpected error while deleting: {path}\nError: {str(e)}",
                     )
         else:
