@@ -1,6 +1,5 @@
 import os
 import subprocess
-import shutil
 from PySide6.QtWidgets import (
     QFileDialog,
 )
@@ -234,7 +233,7 @@ class SapuBersihLogic:
 
     # Membuka lokasi file yang telah ditemukan dan ada di list
     def open_selected_location(self, item, column):
-        selected_path = item.text(0)
+        selected_path = item.text(2)
         if os.path.exists(selected_path):
             try:
                 subprocess.run(
@@ -329,70 +328,3 @@ class SapuBersihLogic:
                 "Success",
                 f"{len(success_items)} files/folders successfully moved to trash.",
             )
-
-    # scan residu
-    def get_installed_apps(self):
-        """
-        Mendapatkan daftar aplikasi yang terinstal dari /Applications dan ~/Applications.
-        """
-        apps_dir = [
-            Path.home() / "Applications",
-            Path("/Applications"),
-        ]
-        installed_apps = set()
-        for directory in apps_dir:
-            if directory.exists():
-                for app in directory.glob("*.app"):
-                    installed_apps.add(app.stem.lower())  # Ambil nama aplikasi
-        return installed_apps
-
-    def is_apple_app(self, app_path):
-        """
-        Periksa apakah aplikasi berasal dari Apple menggunakan metadata.
-        """
-        try:
-            # Jalankan perintah 'mdls' untuk mendapatkan metadata aplikasi
-            result = subprocess.run(
-                ["mdls", "-name", "kMDItemCFBundleIdentifier", str(app_path)],
-                stdout=subprocess.PIPE,
-                stderr=subprocess.DEVNULL,
-                text=True,
-            )
-            # Ambil output CFBundleIdentifier
-            output = result.stdout.strip()
-            if "com.apple" in output:  # Aplikasi dari Apple memiliki prefix 'com.apple'
-                return True
-        except Exception as e:
-            print(f"Error checking metadata for {app_path}: {e}")
-        return False
-
-    def scan_residual(self):
-        self.ui.clear_tree()
-        # Dapatkan daftar aplikasi yang terinstal
-        installed_apps = self.get_installed_apps()
-
-        # Direktori untuk pemindaian residu
-        locations = [
-            Path.home() / "Library/Caches",
-            Path.home() / "Library/Preferences",
-            Path("/Library/Caches"),
-            Path("/Library/Preferences"),
-        ]
-
-        residu = set()
-        # Pindai folder Cache & preference
-        for item in locations:
-            self.ui.update_status(f"Searching in {item}...")
-            if item.is_dir() or item.is_file() or item.glob("*.plist"):
-                if self.is_apple_app(item):
-                    print(f"Skipping Apple app: {item}, Bundle ID: {item.bundle_id}")
-                    continue
-                if not any(app in item.name.lower() for app in installed_apps):
-                    residu.add(str(item))  # Tambahkan path ke set
-                    print(f"Residual detected: {item}")
-                    self.ui.add_tree_item(str(item), True)  # True untuk writable
-                else:
-                    print(f"Skipped (installed app): {item}")
-            self.ui.stop_update_status()
-
-        return list(residu)

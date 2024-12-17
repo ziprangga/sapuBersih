@@ -12,6 +12,8 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt, QFileInfo
 from PySide6.QtGui import QIcon
 from src.main_logic import SapuBersihLogic
+
+from src.clean_junk import JunkFileCleaner
 from src.menu_ui import MenuBar
 from src.utility import resource_path, ERROR_TITLE
 
@@ -24,6 +26,7 @@ class SapuBersihUI(QMainWindow, gui.main_window.Ui_MainWindow):
         self.setupUi(self)
         # Inisialisasi logika
         self.logic = SapuBersihLogic(self)
+        self.junk_clean = JunkFileCleaner(self)
 
         # Atur menu bar
         self.setMenuBar(MenuBar(self))
@@ -44,7 +47,7 @@ class SapuBersihUI(QMainWindow, gui.main_window.Ui_MainWindow):
 
         # Menghubungkan sinyal ke slot
         self.browse_button.clicked.connect(self.logic.browse_application)
-        self.scan_button.clicked.connect(self.logic.scan_residual)
+        self.scan_button.clicked.connect(self.junk_clean.clear_junk_files)
         self.delete_button.clicked.connect(self.logic.move_to_trash)
 
         # Hubungkan klik dua kali pada item
@@ -95,12 +98,12 @@ class SapuBersihUI(QMainWindow, gui.main_window.Ui_MainWindow):
     def clear_tree(self):
         self.tree.clear()
 
-    def add_tree_item(self, path, writable):
+    def add_tree_item(self, category, name, full_path, writable):
         status = "Accessible" if writable else "Read-Only"
 
         # Menggunakan QFileIconProvider untuk mendapatkan ikon file atau direktori
         icon_provider = QFileIconProvider()
-        file_info = QFileInfo(path)
+        file_info = QFileInfo(full_path)
 
         # Tentukan apakah path adalah direktori atau file
         if file_info.isDir():
@@ -108,7 +111,7 @@ class SapuBersihUI(QMainWindow, gui.main_window.Ui_MainWindow):
         else:
             icon = icon_provider.icon(QFileIconProvider.File)
 
-        item = QTreeWidgetItem([path, status])
+        item = QTreeWidgetItem([category, name, full_path, status])
         item.setIcon(0, icon)  # Gunakan ikon yang didapat dari QFileIconProvider
         self.tree.addTopLevelItem(item)
 
@@ -129,6 +132,9 @@ class SapuBersihUI(QMainWindow, gui.main_window.Ui_MainWindow):
             self, ERROR_TITLE, message, QMessageBox.Yes | QMessageBox.No
         )
         return reply == QMessageBox.Yes
+
+    def show_log(self, message):
+        self.show_message(message)
 
     def update_status(self, message):
         """Update status bar or label with a message."""
