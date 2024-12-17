@@ -113,9 +113,11 @@ class Ui_MainWindow(object):
             QCoreApplication.translate("MainWindow", "Selected file: None", None)
         )
         self.browse_button.setText(
-            QCoreApplication.translate("MainWindow", "Browse", None)
+            QCoreApplication.translate("MainWindow", "Browse Application", None)
         )
-        self.scan_button.setText(QCoreApplication.translate("MainWindow", "Scan", None))
+        self.scan_button.setText(
+            QCoreApplication.translate("MainWindow", "Scan Junk", None)
+        )
         self.tree.setHeaderLabels(
             [
                 QCoreApplication.translate("MainWindow", "File/Folder", None),
