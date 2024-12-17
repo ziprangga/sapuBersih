@@ -44,6 +44,7 @@ class SapuBersihUI(QMainWindow, gui.main_window.Ui_MainWindow):
 
         # Menghubungkan sinyal ke slot
         self.browse_button.clicked.connect(self.logic.browse_application)
+        self.scan_button.clicked.connect(self.logic.get_installed_apps)
         self.delete_button.clicked.connect(self.logic.move_to_trash)
 
         # Hubungkan klik dua kali pada item

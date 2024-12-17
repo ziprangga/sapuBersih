@@ -49,14 +49,14 @@ app = BUNDLE(
     name='sapuBersih.app',
     icon='resources/sapu_bersih.icns',
     bundle_identifier='com.example.sapuBersih',
-    version='1.0.0',
+    version='1.1.0',
     info_plist={
         'NSPrincipalClass': 'NSApplication',
         'NSAppleScriptEnabled': False,
         'NSHighResolutionCapable': True,
         'CFBundleName': 'sapuBersih',
-        'CFBundleShortVersionString': '1.0',
-        'CFBundleVersion': '1.0.0',  
+        'CFBundleShortVersionString': '1.1',
+        'CFBundleVersion': '1.1.0',  
         'CFBundleIdentifier': 'com.example.sapuBersih',
     },
 )

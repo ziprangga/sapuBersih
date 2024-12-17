@@ -1,5 +1,6 @@
 import os
 import subprocess
+import shutil
 from PySide6.QtWidgets import (
     QFileDialog,
 )
@@ -328,3 +329,61 @@ class SapuBersihLogic:
                 "Success",
                 f"{len(success_items)} files/folders successfully moved to trash.",
             )
+
+    # scan residu
+    def get_installed_apps():
+        """Mendapatkan daftar aplikasi yang terinstal di macOS"""
+        app_dirs = [Path("/Applications"), Path.home() / "Applications"]
+        installed_apps = set()
+
+        for app_dir in app_dirs:
+            if app_dir.exists():
+                for app in app_dir.glob("*.app"):
+                    installed_apps.add(
+                        app.stem.lower()
+                    )  # Ambil nama aplikasi (tanpa ekstensi)
+        return installed_apps
+
+    def find_residual_files(installed_apps):
+        """Menemukan file cache dan preferences yang tidak terhubung ke aplikasi terinstal"""
+        cache_dir = Path.home() / "Library" / "Caches"
+        pref_dir = Path.home() / "Library" / "Preferences"
+
+        residual_files = []
+
+        # Cari file cache
+        print("🔍 Mencari file cache residu...")
+        for item in cache_dir.iterdir():
+            if not any(app in item.name.lower() for app in installed_apps):
+                residual_files.append(item)
+
+        # Cari file preferences
+        print("\n🔍 Mencari file preferences residu...")
+        for pref_file in pref_dir.glob("*.plist"):
+            if not any(app in pref_file.name.lower() for app in installed_apps):
+                residual_files.append(pref_file)
+
+        return residual_files
+
+    def list_residual_files(residual_files):
+        """Menampilkan daftar file residu"""
+        print("\n📋 Daftar file residu yang ditemukan:")
+        for index, file in enumerate(residual_files, start=1):
+            print(f"{index}. {file}")
+
+    def confirm_and_delete(residual_files):
+        """Konfirmasi pengguna dan menghapus file residu jika disetujui"""
+        confirm = input("\nApakah ingin menghapus semua file residu ini? (y/n): ")
+        if confirm.lower() == "y":
+            for file in residual_files:
+                try:
+                    if file.is_dir():
+                        shutil.rmtree(file)
+                    else:
+                        file.unlink()
+                    print(f"✅ File dihapus: {file}")
+                except Exception as e:
+                    print(f"❌ Gagal menghapus {file}: {e}")
+            print("\n🎉 Pembersihan selesai!")
+        else:
+            print("\n❌ Pembersihan dibatalkan. Tidak ada file yang dihapus.")

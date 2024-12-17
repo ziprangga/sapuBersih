@@ -51,6 +51,7 @@ from PySide6.QtWidgets import (
     QTreeWidget,
     QTreeWidgetItem,
     QVBoxLayout,
+    QHBoxLayout,
     QWidget,
 )
 
@@ -71,10 +72,18 @@ class Ui_MainWindow(object):
 
         self.verticalLayout.addWidget(self.selected_file_label)
 
+        self.horizontalLayout = QHBoxLayout()
+        self.horizontalLayout.setObjectName("horizontalLayout")
+
         self.browse_button = QPushButton(self.centralwidget)
         self.browse_button.setObjectName("browse_button")
+        self.horizontalLayout.addWidget(self.browse_button)
 
-        self.verticalLayout.addWidget(self.browse_button)
+        self.scan_button = QPushButton(self.centralwidget)
+        self.scan_button.setObjectName("scan_button")
+        self.horizontalLayout.addWidget(self.scan_button)
+
+        self.verticalLayout.addLayout(self.horizontalLayout)
 
         self.tree = QTreeWidget(self.centralwidget)
         self.tree.setObjectName("tree")
@@ -106,6 +115,7 @@ class Ui_MainWindow(object):
         self.browse_button.setText(
             QCoreApplication.translate("MainWindow", "Browse", None)
         )
+        self.scan_button.setText(QCoreApplication.translate("MainWindow", "Scan", None))
         self.tree.setHeaderLabels(
             [
                 QCoreApplication.translate("MainWindow", "File/Folder Path", None),
