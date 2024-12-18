@@ -64,7 +64,7 @@ SCAN_ASSOCIATED = [
 ]
 
 
-# Fungsi resource_path untuk akses sumber daya
+# Fungsi
 def resource_path(relative_path):
     """Dapatkan path absolut ke file sumber daya."""
     base_path = getattr(sys, "_MEIPASS", os.path.abspath("."))
