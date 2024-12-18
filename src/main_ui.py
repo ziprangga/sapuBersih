@@ -11,9 +11,9 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Qt, QFileInfo
 from PySide6.QtGui import QIcon
-from src.main_logic import SapuBersihLogic
-from src.clean_junk import JunkFileCleaner
-from src.menu_ui import MenuBar
+from src.clean_app_logic import SapuBersihLogic
+from src.clean_junk_logic import JunkFileCleaner
+from src.app_menu import MenuBar
 import src.utility as util
 
 
@@ -38,10 +38,10 @@ class SapuBersihUI(QMainWindow, gui.main_window.Ui_MainWindow):
         if os.path.exists(icon_path):
             self.setWindowIcon(QIcon(icon_path))
         else:
-            print(f"Warning: Icon not found at {icon_path}")
+            self.setWindowIcon(QIcon())
 
         self.status_label = QLabel("Ready")
-        self.status_label.setAlignment(Qt.AlignLeft)
+        self.status_label.setAlignment(Qt.AlignCenter)
         self.statusBar().addWidget(self.status_label)
 
         # Menghubungkan sinyal ke slot
@@ -61,9 +61,15 @@ class SapuBersihUI(QMainWindow, gui.main_window.Ui_MainWindow):
         # Aktifkan drop event untuk window
         self.setAcceptDrops(True)
 
+        # Koneksi event change checkbox
+        self.include_files_checkbox.stateChanged.connect(self.toggle_include_files)
+
+        # Add this method
+        self.include_files_checkbox.setChecked(util.include_file_status)
+
     # Drag n Drop
     def dragEnterEvent(self, event):
-        """Event saat drag masuk ke window."""
+        # Event saat drag masuk ke window
         if event.mimeData().hasUrls():
             event.acceptProposedAction()
         else:
@@ -126,9 +132,9 @@ class SapuBersihUI(QMainWindow, gui.main_window.Ui_MainWindow):
     def show_error(self, message):
         self.show_message("Error", message, QMessageBox.Critical)
 
-    def show_question(self, message):
+    def show_question(self, message, default=QMessageBox.No):
         reply = QMessageBox.question(
-            self, "Confirmation", message, QMessageBox.Yes | QMessageBox.No
+            self, "Confirmation", message, QMessageBox.Yes | QMessageBox.No, default
         )
         return reply == QMessageBox.Yes
 
@@ -136,7 +142,7 @@ class SapuBersihUI(QMainWindow, gui.main_window.Ui_MainWindow):
         self.show_message("Log", message)
 
     def update_status(self, message):
-        """Update status bar or label with a message."""
+        # Update status bar or label with a message
         self.status_label.setText(message)
         QApplication.processEvents()
         if self.stop_update:
@@ -144,3 +150,25 @@ class SapuBersihUI(QMainWindow, gui.main_window.Ui_MainWindow):
 
     def stop_update_status(self):
         self.stop_update = True
+
+    def toggle_include_files(self, state):
+        # Tampilkan dialog konfirmasi
+        confirm_include = self.show_question(
+            "Are you sure to include Apple apps in the scan?"
+        )
+
+        if confirm_include:
+            # Perbarui status util.include_file_status berdasarkan checkbox
+            util.include_file_status = state == Qt.Checked
+            self.save_choice()  # Simpan pilihan
+
+        else:
+            # Jika pengguna tidak setuju, kembalikan checkbox ke status sebelumnya
+            self.include_files_checkbox.blockSignals(
+                True
+            )  # Hindari pemicu sinyal tambahan
+            self.include_files_checkbox.setChecked(util.include_file_status)
+            self.include_files_checkbox.blockSignals(False)
+
+    def save_choice(self):
+        util.include_file_status = self.include_files_checkbox.isChecked()

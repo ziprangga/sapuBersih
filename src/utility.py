@@ -63,10 +63,14 @@ SCAN_ASSOCIATED = [
     Path("/usr/local/var"),
 ]
 
+EXCLUDED_APPLE_APP = ["com.apple.", "com.apple.."]
+
+include_file_status = False
+
 
 # Fungsi
 def resource_path(relative_path):
-    """Dapatkan path absolut ke file sumber daya."""
+    # Dapatkan path absolut ke file sumber daya
     base_path = getattr(sys, "_MEIPASS", os.path.abspath("."))
     return os.path.join(base_path, relative_path)
 
@@ -98,3 +102,13 @@ def scan_associated(as_string=False):
     if as_string:
         return [str(path) for path in SCAN_ASSOCIATED]
     return SCAN_ASSOCIATED
+
+
+def include_file():
+    return include_file_status
+
+
+def exclude_apps():
+    if include_file():
+        return []
+    return EXCLUDED_APPLE_APP

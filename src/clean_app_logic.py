@@ -1,8 +1,6 @@
 import os
 import subprocess
-from PySide6.QtWidgets import (
-    QFileDialog,
-)
+from PySide6.QtWidgets import QFileDialog
 from pathlib import Path
 import src.utility as util
 
@@ -14,7 +12,7 @@ class SapuBersihLogic:
     # Proses input aplikasi yang akan di delete
     def browse_application(self, app_path=None):
         self.ui.clear_tree()
-        """Browse untuk mencari aplikasi .app atau menggunakan drag-and-drop."""
+        # Browse untuk mencari aplikasi .app atau menggunakan drag-and-drop
         if app_path:
             # Proses langsung jika path diberikan (drag-and-drop)
             app_name = os.path.basename(app_path).replace(".app", "")
@@ -145,7 +143,6 @@ class SapuBersihLogic:
 
         # Jika ada file .bom ditemukan, simpan ke desktop
         if paths:
-            print("Saving bill of material logs to desktop…")
             desktop_path = os.path.expanduser(f"~/Desktop/{app_name}")
             os.makedirs(desktop_path, exist_ok=True)
 
