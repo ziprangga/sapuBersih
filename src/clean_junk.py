@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+import src.utility as util
 
 
 class JunkFileCleaner:
@@ -20,27 +21,27 @@ class JunkFileCleaner:
             self.ui.stop_update_status()
         return list(found_files)
 
-    def clear_temp_files(self, preview=True):
-        temp_locations = ["/tmp"]
+    def scan_temp_files(self, preview=True):
+        temp_locations = util.temp_paths()
         patterns = ["*"]  # Semua file
         return self.find_files_by_pattern(temp_locations, patterns)
 
-    def clear_cache(self, preview=True):
-        cache_locations = ["/Library/Caches", str(Path.home() / "Library/Caches")]
+    def scan_cache(self, preview=True):
+        cache_locations = util.cache_paths()
         patterns = ["*"]  # Semua file/folder di dalam Cache
         return self.find_files_by_pattern(cache_locations, patterns)
 
-    def clear_preferences_for_deleted_apps(self, preview=True):
-        preference_locations = [str(Path.home() / "Library/Preferences")]
+    def scan_preferences_for_deleted_apps(self, preview=True):
+        preference_locations = util.preference_paths()
         patterns = ["*.plist"]  # File .plist
         return self.find_files_by_pattern(preference_locations, patterns)
 
-    def clear_junk_files(self, preview=True):
+    def scan_junk_files(self, preview=True):
         self.ui.clear_tree()
 
-        temp_files = self.clear_temp_files(preview=preview)
-        cache_files = self.clear_cache(preview=preview)
-        pref_files = self.clear_preferences_for_deleted_apps(preview=preview)
+        temp_files = self.scan_temp_files(preview=preview)
+        cache_files = self.scan_cache(preview=preview)
+        pref_files = self.scan_preferences_for_deleted_apps(preview=preview)
 
         # Tambahkan file ke UI dengan path lengkap
         for file in temp_files:

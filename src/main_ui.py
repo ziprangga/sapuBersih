@@ -12,10 +12,9 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt, QFileInfo
 from PySide6.QtGui import QIcon
 from src.main_logic import SapuBersihLogic
-
 from src.clean_junk import JunkFileCleaner
 from src.menu_ui import MenuBar
-from src.utility import resource_path, ERROR_TITLE
+import src.utility as util
 
 
 # User Interface
@@ -35,7 +34,7 @@ class SapuBersihUI(QMainWindow, gui.main_window.Ui_MainWindow):
         self.stop_update = False
 
         # Atur ikon aplikasi
-        icon_path = resource_path("resources/sapu_bersih.icns")
+        icon_path = util.resource_path("resources/sapu_bersih.icns")
         if os.path.exists(icon_path):
             self.setWindowIcon(QIcon(icon_path))
         else:
@@ -47,7 +46,7 @@ class SapuBersihUI(QMainWindow, gui.main_window.Ui_MainWindow):
 
         # Menghubungkan sinyal ke slot
         self.browse_button.clicked.connect(self.logic.browse_application)
-        self.scan_button.clicked.connect(self.junk_clean.clear_junk_files)
+        self.scan_button.clicked.connect(self.junk_clean.scan_junk_files)
         self.delete_button.clicked.connect(self.logic.move_to_trash)
 
         # Hubungkan klik dua kali pada item
@@ -124,17 +123,17 @@ class SapuBersihUI(QMainWindow, gui.main_window.Ui_MainWindow):
     def show_message(self, title, message, icon=QMessageBox.Information):
         QMessageBox(icon, title, message, QMessageBox.Ok, self).exec()
 
-    def show_error(self, message, title=ERROR_TITLE):
-        self.show_message(title, message, QMessageBox.Critical)
+    def show_error(self, message):
+        self.show_message("Error", message, QMessageBox.Critical)
 
     def show_question(self, message):
         reply = QMessageBox.question(
-            self, ERROR_TITLE, message, QMessageBox.Yes | QMessageBox.No
+            self, "Confirmation", message, QMessageBox.Yes | QMessageBox.No
         )
         return reply == QMessageBox.Yes
 
     def show_log(self, message):
-        self.show_message(message)
+        self.show_message("Log", message)
 
     def update_status(self, message):
         """Update status bar or label with a message."""

@@ -4,7 +4,7 @@ from PySide6.QtWidgets import (
     QFileDialog,
 )
 from pathlib import Path
-from src.utility import RECEIPT_PATH
+import src.utility as util
 
 
 class SapuBersihLogic:
@@ -13,6 +13,7 @@ class SapuBersihLogic:
 
     # Proses input aplikasi yang akan di delete
     def browse_application(self, app_path=None):
+        self.ui.clear_tree()
         """Browse untuk mencari aplikasi .app atau menggunakan drag-and-drop."""
         if app_path:
             # Proses langsung jika path diberikan (drag-and-drop)
@@ -22,9 +23,7 @@ class SapuBersihLogic:
                 # Jika proses tidak diizinkan, hentikan eksekusi
             else:
                 if not Path(app_path).is_dir() or not app_path.endswith(".app"):
-                    self.ui.show_error(
-                        "Invalid File", "Selected file is not a valid .app bundle."
-                    )
+                    self.ui.show_error("Selected file is not a valid .app bundle.")
                     return
         else:
             # Logika untuk membuka dialog file
@@ -46,8 +45,7 @@ class SapuBersihLogic:
             ):
                 self.kill_processes(processes)
             else:
-                self.ui.show_message(
-                    "Info",
+                self.ui.show_error(
                     "The application is still running. Please close it manually.",
                 )
                 return False
@@ -81,7 +79,6 @@ class SapuBersihLogic:
 
     # Menjalankan perintah pencarian file yang terkait dengan aplikasi
     def clean_application(self, app_path):
-        self.ui.clear_tree()
 
         # Ambil bundle identifier
         bundle_identifier = self.get_bundle_identifier(app_path)
@@ -129,13 +126,19 @@ class SapuBersihLogic:
     def find_and_save_bom_logs(self, app_name, bundle_identifier):
 
         paths = []
+
+        receipt_location = util.receipt_paths()
         # Cari .bom files untuk app_name
-        for path in RECEIPT_PATH.rglob(f"*{app_name}*.bom"):
-            paths.append(str(path))
+        for path in receipt_location:
+            if path.exists() and path.is_dir():
+                for match in path.rglob(f"*{app_name}*.bom"):
+                    paths.append(str(path))
 
         # Cari .bom files untuk bundle_identifier
-        for path in RECEIPT_PATH.rglob(f"*{bundle_identifier}*.bom"):
-            paths.append(str(path))
+        for path in receipt_location:
+            if path.exists() and path.is_dir():
+                for match in path.rglob(f"*{bundle_identifier}*.bom"):
+                    paths.append(str(path))
 
         # Hapus duplikat
         paths = list(set(paths))
@@ -180,44 +183,9 @@ class SapuBersihLogic:
             )
             return result.stdout.strip()
 
-        # Daftar lokasi yang relevan untuk mencari data aplikasi
-        locations = [
-            Path.home() / "Library",
-            Path.home() / "Library/Application Scripts",
-            Path.home() / "Library/Application Support",
-            Path.home() / "Library/Application Support/CrashReporter",
-            Path.home() / "Library/Containers",
-            Path.home() / "Library/Caches",
-            Path.home() / "Library/HTTPStorages",
-            Path.home() / "Library/Group Containers",
-            Path.home() / "Library/Internet Plug-Ins",
-            Path.home() / "Library/LaunchAgents",
-            Path.home() / "Library/Logs",
-            Path.home() / "Library/Preferences",
-            Path.home() / "Library/Preferences/ByHost",
-            Path.home() / "Library/Saved Application State",
-            Path.home() / "Library/WebKit",
-            Path("/Library"),
-            Path("/Library/Application Support"),
-            Path("/Library/Application Support/CrashReporter"),
-            Path("/Library/Caches"),
-            Path("/Library/Extensions"),
-            Path("/Library/Internet Plug-Ins"),
-            Path("/Library/LaunchAgents"),
-            Path("/Library/LaunchDaemons"),
-            Path("/Library/Logs"),
-            Path("/Library/Preferences"),
-            Path("/Library/PrivilegedHelperTools"),
-            Path("/private/var/db/receipts"),
-            Path("/usr/local/bin"),
-            Path("/usr/local/etc"),
-            Path("/usr/local/opt"),
-            Path("/usr/local/sbin"),
-            Path("/usr/local/share"),
-            Path("/usr/local/var"),
-            Path(get_darwin_user_cache_dir()),  # Dari getconf
-            Path(get_darwin_user_temp_dir()),  # Dari getconf
-        ]
+        locations = util.scan_associated()
+        locations.append(Path(get_darwin_user_cache_dir()))
+        locations.append(Path(get_darwin_user_temp_dir()))
 
         paths = set()
 
@@ -290,12 +258,10 @@ class SapuBersihLogic:
             for item in items_to_delete:
                 path = item.text(1)
                 if not os.path.exists(path):
-                    self.ui.show_error("Invalid Path", f"Path does not exist: {path}")
+                    self.ui.show_error(f"Path does not exist: {path}")
                     continue
                 if not os.access(path, os.W_OK):
-                    self.ui.show_error(
-                        "Permission Denied", f"No permission to delete: {path}"
-                    )
+                    self.ui.show_error(f"Permission Denied: {path}")
                     continue
 
                 try:
