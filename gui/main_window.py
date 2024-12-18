@@ -1,13 +1,3 @@
-# -*- coding: utf-8 -*-
-
-################################################################################
-## Form generated from reading UI file 'main_window.ui'
-##
-## Created by: Qt User Interface Compiler version 6.8.1
-##
-## WARNING! All changes made in this file will be lost when recompiling UI file!
-################################################################################
-
 from PySide6.QtCore import (
     QCoreApplication,
     QDate,
@@ -21,6 +11,8 @@ from PySide6.QtCore import (
     QTime,
     QUrl,
     Qt,
+    QPropertyAnimation,
+    QSettings,
 )
 from PySide6.QtGui import (
     QBrush,
@@ -39,6 +31,7 @@ from PySide6.QtGui import (
     QPixmap,
     QRadialGradient,
     QTransform,
+    QGuiApplication,
 )
 from PySide6.QtWidgets import (
     QApplication,
@@ -54,6 +47,8 @@ from PySide6.QtWidgets import (
     QHBoxLayout,
     QWidget,
 )
+import src.utility as util
+import subprocess
 
 
 class Ui_MainWindow(object):
@@ -113,7 +108,12 @@ class Ui_MainWindow(object):
 
         QMetaObject.connectSlotsByName(MainWindow)
 
-    # setupUi
+        self.scan_button.setMouseTracking(True)
+
+        self.apply_stylesheet(
+            util.resource_path("gui/style_dark.qss"),
+            util.resource_path("gui/style_light.qss"),
+        )
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(
@@ -140,4 +140,25 @@ class Ui_MainWindow(object):
             QCoreApplication.translate("MainWindow", "Move to Trash", None)
         )
 
-    # retranslateUi
+    def apply_stylesheet(self, stylesheet_path_dark, stylesheet_path_light):
+        # Gunakan osascript untuk membaca preferensi sistem
+        result = subprocess.run(
+            ["defaults", "read", "-g", "AppleInterfaceStyle"],
+            capture_output=True,
+            text=True,
+        )
+        is_dark_mode = result.stdout.strip() == "Dark"
+
+        settings = QSettings("Apple Global Domain", QSettings.NativeFormat)
+        for key in settings.allKeys():
+            print(f"{key}: {settings.value(key)}")
+
+        if is_dark_mode:
+            stylesheet_path = stylesheet_path_dark
+        else:
+            stylesheet_path = stylesheet_path_light
+
+        with open(stylesheet_path, "r") as file:
+            qss = file.read()
+
+        QApplication.instance().setStyleSheet(qss)

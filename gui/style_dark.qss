@@ -1,0 +1,78 @@
+/* QSS File for Custom Dark Theme */
+
+/* Main Window */
+QMainWindow {
+    background-color: #323232; /* Window */
+    color: #ffffff; /* WindowText */
+}
+
+/* QLabel (Selected File Label) */
+QLabel {
+    background-color: #00323232; /* Base */
+    color: #ffffff; /* Text */
+}
+
+/* QCheckBox (Include Files Checkbox) */
+QCheckBox {
+    background-color: #00000000; /* Base */
+    color: #ffffff; /* Text */
+    
+}
+
+/* QPushButton (macOS-like Buttons) */
+QPushButton {
+    background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 #002340, stop:1 #00132D); /* Darker Mac-like gradient */
+    color: #ffffff; /* Text */
+    border: 1px solid #00172C; /* Darker border for contrast */
+    border-radius: 6px; /* Rounded corners similar to macOS */
+    padding: 6px 12px;
+    font: bold 13px "Helvetica"; /* macOS font style */
+    min-width: 80px;
+}
+QPushButton:hover {
+    background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 #0056b3, stop:1 #003c8e); /* Darker hover effect */
+    border: 1px solid #002752; /* Darker border on hover */
+}
+QPushButton:pressed {
+    background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 #007BFF, stop:1 #0056b3); /* Darkest pressed effect */
+    border: 1px solid #001f3d; /* Even darker border on pressed */
+}
+
+/* QTreeWidget (Tree) */
+QTreeWidget {
+    background-color: #2a2a2a; /* Darker Base */
+    color: #ffffff; /* Text */
+    alternate-background-color: #3a3a3a; /* Dimmer AlternateBase */
+    border: 1px solid #000000;
+}
+QTreeWidget::item:selected {
+    background-color: #314f78; /* Highlight */
+    color: #ffffff; /* HighlightedText */
+}
+
+/* QPushButton#delete_button */
+QPushButton#delete_button {
+    background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 #530009, stop:1 #2B0004); /* Darker Mac-like red gradient */
+    color: #ffffff; /* Text */
+    border: 1px solid #530009; /* Even darker border for contrast */
+    border-radius: 6px; /* Rounded corners */
+    padding: 6px 12px;
+    font: bold 13px "Helvetica";
+    min-width: 80px;
+}
+QPushButton#delete_button:hover {
+    background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 #8e1023, stop:1 #67000d); /* Darker gradient on hover */
+    border: 1px solid #4d0008; /* Darker border on hover */
+}
+QPushButton#delete_button:pressed {
+    background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 #b5171e, stop:1 #8e1023); /* Darkest gradient on press */
+    border: 1px solid #330004; /* Even darker border on pressed */
+}
+
+
+/* Tooltip Styling */
+QToolTip {
+    background-color: #ffffff; /* ToolTipBase */
+    color: #000000; /* ToolTipText */
+    border: 1px solid #989898;
+}

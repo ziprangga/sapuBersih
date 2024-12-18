@@ -94,8 +94,9 @@ class SapuBersihLogic:
 
         if related_paths:
             for path in related_paths:
+                name_file = os.path.basename(path)
                 self.ui.add_tree_item(
-                    app_name, path, bundle_identifier, os.access(path, os.W_OK)
+                    name_file, path, bundle_identifier, os.access(path, os.W_OK)
                 )
         else:
             self.ui.add_placeholder_item()

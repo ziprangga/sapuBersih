@@ -23,6 +23,7 @@ class SapuBersihUI(QMainWindow, gui.main_window.Ui_MainWindow):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
+
         # Inisialisasi logika
         self.logic = SapuBersihLogic(self)
         self.junk_clean = JunkFileCleaner(self)
@@ -164,9 +165,7 @@ class SapuBersihUI(QMainWindow, gui.main_window.Ui_MainWindow):
 
         else:
             # Jika pengguna tidak setuju, kembalikan checkbox ke status sebelumnya
-            self.include_files_checkbox.blockSignals(
-                True
-            )  # Hindari pemicu sinyal tambahan
+            self.include_files_checkbox.blockSignals(True)
             self.include_files_checkbox.setChecked(util.include_file_status)
             self.include_files_checkbox.blockSignals(False)
 
