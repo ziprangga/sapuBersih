@@ -49,6 +49,7 @@ from PySide6.QtWidgets import (
 )
 import src.utility as util
 import subprocess
+from src.app_menu import MenuBar
 
 
 class Ui_MainWindow(object):
@@ -100,13 +101,10 @@ class Ui_MainWindow(object):
 
         self.delete_button = QPushButton(self.centralwidget)
         self.delete_button.setObjectName("delete_button")
-
         self.verticalLayout.addWidget(self.delete_button)
 
         MainWindow.setCentralWidget(self.centralwidget)
-
         self.retranslateUi(MainWindow)
-
         QMetaObject.connectSlotsByName(MainWindow)
 
         self.scan_button.setMouseTracking(True)
