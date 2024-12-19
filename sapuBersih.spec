@@ -33,7 +33,7 @@ exe = EXE(
     codesign_identity=None,
     entitlements_file=None,
     version='version_info.txt',
-    icon=['resources/sapu_bersih.icns'],
+    icon=['resources/sapuBersih.icns'],
 )
 coll = COLLECT(
     exe,
@@ -47,7 +47,7 @@ coll = COLLECT(
 app = BUNDLE(
     coll,
     name='sapuBersih.app',
-    icon='resources/sapu_bersih.icns',
+    icon='resources/sapuBersih.icns',
     bundle_identifier='com.example.sapuBersih',
     version='1.1.0',
     info_plist={

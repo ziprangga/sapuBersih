@@ -1,79 +1,79 @@
-/* QSS File for Custom Dark Theme */
+/* Dark Theme */
 
 /* Main Window */
 QMainWindow {
-    background-color: #323232; /* Window */
-    color: #ffffff; /* WindowText */
+    background-color: #323232;
+    color: #ffffff;
 }
 
 /* QLabel (Selected File Label) */
 QLabel {
-    background-color: #00323232; /* Base */
-    color: #ffffff; /* Text */
+    background-color: #00323232;
+    color: #ffffff;
 }
 
 /* QCheckBox (Include Files Checkbox) */
 QCheckBox {
-    background-color: #00000000; /* Base */
-    color: #ffffff; /* Text */
+    background-color: #00000000; 
+    color: #ffffff;
     margin-bottom: 10px;
     
 }
 
 /* QPushButton (macOS-like Buttons) */
 QPushButton {
-    background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 #002340, stop:1 #00132D); /* Darker Mac-like gradient */
-    color: #ffffff; /* Text */
-    border: 1px solid #00172C; /* Darker border for contrast */
-    border-radius: 6px; /* Rounded corners similar to macOS */
+    background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 #002340, stop:1 #00132D);
+    color: #ffffff; 
+    border: 1px solid #00172C; 
+    border-radius: 6px; 
     padding: 6px 12px;
-    font: bold 13px "Helvetica"; /* macOS font style */
+    font: bold 13px "Helvetica";
     min-width: 80px;
 }
 QPushButton:hover {
-    background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 #0056b3, stop:1 #003c8e); /* Darker hover effect */
-    border: 1px solid #002752; /* Darker border on hover */
+    background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 #0056b3, stop:1 #003c8e); 
+    border: 1px solid #002752; 
 }
 QPushButton:pressed {
-    background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 #007BFF, stop:1 #0056b3); /* Darkest pressed effect */
-    border: 1px solid #001f3d; /* Even darker border on pressed */
+    background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 #007BFF, stop:1 #0056b3);
+    border: 1px solid #001f3d; 
 }
 
 /* QTreeWidget (Tree) */
 QTreeWidget {
-    background-color: #2a2a2a; /* Darker Base */
-    color: #ffffff; /* Text */
-    alternate-background-color: #3a3a3a; /* Dimmer AlternateBase */
+    background-color: #2a2a2a; 
+    color: #ffffff; 
+    alternate-background-color: #3a3a3a;
     border: 1px solid #000000;
 }
 QTreeWidget::item:selected {
-    background-color: #314f78; /* Highlight */
-    color: #ffffff; /* HighlightedText */
+    background-color: #314f78; 
+    color: #ffffff; 
 }
 
 /* QPushButton#delete_button */
 QPushButton#delete_button {
-    background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 #530009, stop:1 #2B0004); /* Darker Mac-like red gradient */
-    color: #ffffff; /* Text */
-    border: 1px solid #530009; /* Even darker border for contrast */
-    border-radius: 6px; /* Rounded corners */
+    background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 #530009, stop:1 #2B0004); 
+    color: #ffffff; 
+    border: 1px solid #530009; 
+    border-radius: 6px; 
     padding: 6px 12px;
     font: bold 13px "Helvetica";
     min-width: 80px;
 }
 QPushButton#delete_button:hover {
-    background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 #8e1023, stop:1 #67000d); /* Darker gradient on hover */
-    border: 1px solid #4d0008; /* Darker border on hover */
+    background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 #8e1023, stop:1 #67000d); 
+    border: 1px solid #4d0008; 
 }
 QPushButton#delete_button:pressed {
-    background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 #b5171e, stop:1 #8e1023); /* Darkest gradient on press */
-    border: 1px solid #330004; /* Even darker border on pressed */
+    background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 #b5171e, stop:1 #8e1023); 
+    border: 1px solid #330004; 
 }
 
 
 /* Tooltip Styling */
 QToolTip {
-    background-color: #ffffff; /* ToolTipBase */
-    color: #000000; /* ToolTipText */
+    background-color: #ffffff; 
+    color: #000000; 
     border: 1px solid #989898;
 }

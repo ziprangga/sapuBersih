@@ -71,7 +71,7 @@ class Ui_MainWindow(object):
         self.include_file_checkbox = QCheckBox(self.centralwidget)
         self.include_file_checkbox.setObjectName("include_file_checkbox")
         self.include_file_checkbox.setText("Include Apple Application")
-        self.include_file_checkbox.setChecked(False)  # Atur status checkbox
+        self.include_file_checkbox.setChecked(False)
         self.include_file_checkbox.setStyleSheet("margin-right: 25px;")
         self.verticalLayout.addWidget(
             self.include_file_checkbox, alignment=Qt.AlignRight

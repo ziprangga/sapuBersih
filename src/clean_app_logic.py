@@ -272,7 +272,7 @@ class SapuBersihLogic:
                         ],
                         check=True,
                     )
-                    success_items.append(item)  # Tambahkan item ke daftar keberhasilan
+                    success_items.append(item)
                     # success_count += 1
                 except subprocess.CalledProcessError as e:
                     self.ui.show_error(

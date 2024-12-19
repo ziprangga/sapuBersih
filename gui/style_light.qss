@@ -1,77 +1,77 @@
-/* QSS File for Custom Light Theme */
+/* Light Theme */
 
 /* Main Window */
 QMainWindow {
-    background-color: #e5e1e1; /* Window */
-    color: #000000; /* WindowText */
+    background-color: #e5e1e1; 
+    color: #000000; 
 }
 
 /* QLabel (Selected File Label) */
 QLabel {
-    background-color: #00e5e1e1; /* Base */
-    color: #000000; /* Text */
+    background-color: #00e5e1e1;
+    color: #000000;
 }
 
 /* QCheckBox (Include Files Checkbox) */
 QCheckBox {
-    background-color: #00000000; /* Base */
-    color: #000000; /* Text */
+    background-color: #00000000; 
+    color: #000000; 
      margin-bottom: 10px;
 }
 
 /* QPushButton (macOS-like Buttons) */
 QPushButton {
-    background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 #003c8e, stop:1 #002752); /* Mac-like blue gradient */
-    color: #ebebeb; /* Text */
-    border: 1px solid #004085; /* Darker border for contrast */
-    border-radius: 6px; /* Rounded corners similar to macOS */
+    background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 #003c8e, stop:1 #002752); 
+    color: #ebebeb; 
+    border: 1px solid #004085; 
+    border-radius: 6px; 
     padding: 6px 12px;
-    font: bold 13px "Helvetica"; /* macOS font style */
+    font: bold 13px "Helvetica"; 
     min-width: 80px;
 }
 QPushButton:hover {
-    background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 #0056b3, stop:1 #003c8e); /* Opposite hover effect */
-    border: 1px solid #002752; /* Darker border on hover */
+    background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 #0056b3, stop:1 #003c8e); 
+    border: 1px solid #002752; 
 }
 QPushButton:pressed {
-    background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 #007BFF, stop:1 #0056b3); /* Opposite pressed effect */
-    border: 1px solid #001f3d; /* Even darker border on pressed */
+    background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 #007BFF, stop:1 #0056b3); 
+    border: 1px solid #001f3d; 
 }
 
 /* QTreeWidget (Tree) */
 QTreeWidget {
-    background-color: #ffffff; /* Light Base */
-    color: #000000; /* Text */
-    alternate-background-color: #f5f5f5; /* Lighter AlternateBase */
+    background-color: #ffffff; 
+    color: #000000; 
+    alternate-background-color: #f5f5f5; 
     border: 1px solid #d0d0d0;
 }
 QTreeWidget::item:selected {
-    background-color: #d9edf7; /* Highlight */
-    color: #000000; /* HighlightedText */
+    background-color: #d9edf7; 
+    color: #000000; 
 }
 
 /* QPushButton#delete_button */
 QPushButton#delete_button {
-    background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 #67000d, stop:1 #450009); /* Opposite Mac-like red gradient */
-    color: #ebebeb; /* Text */
-    border: 1px solid #67000d; /* Darker border for contrast */
-    border-radius: 6px; /* Rounded corners */
+    background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 #67000d, stop:1 #450009);
+    color: #ebebeb; 
+    border: 1px solid #67000d; 
+    border-radius: 6px; 
     padding: 6px 12px;
     font: bold 13px "Helvetica";
     min-width: 80px;
 }
 QPushButton#delete_button:hover {
-    background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 #8e1023, stop:1 #67000d); /* Opposite hover effect */
-    border: 1px solid #4d0008; /* Darker border on hover */
+    background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 #8e1023, stop:1 #67000d); 
+    border: 1px solid #4d0008;
 }
 QPushButton#delete_button:pressed {
-    background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 #b5171e, stop:1 #8e1023); /* Opposite pressed effect */
-    border: 1px solid #330004; /* Even darker border on pressed */
+    background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 #b5171e, stop:1 #8e1023); 
+    border: 1px solid #330004; 
 }
 
 /* Tooltip Styling */
 QToolTip {
-    background-color: #000000; /* ToolTipBase */
-    color: #ffffff; /* ToolTipText */
+    background-color: #000000; 
+    color: #ffffff; 
     border: 1px solid #666666;
 }

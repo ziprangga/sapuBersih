@@ -35,7 +35,7 @@ class SapuBersihUI(QMainWindow, gui.main_window.Ui_MainWindow):
         self.stop_update = False
 
         # Atur ikon aplikasi
-        icon_path = util.resource_path("resources/sapu_bersih.icns")
+        icon_path = util.resource_path("resources/sapuBersih.icns")
         if os.path.exists(icon_path):
             self.setWindowIcon(QIcon(icon_path))
         else:
@@ -115,7 +115,7 @@ class SapuBersihUI(QMainWindow, gui.main_window.Ui_MainWindow):
             icon = icon_provider.icon(QFileIconProvider.File)
 
         item = QTreeWidgetItem([name, path, category, status])
-        item.setIcon(0, icon)  # Gunakan ikon yang didapat dari QFileIconProvider
+        item.setIcon(0, icon)
         self.tree.addTopLevelItem(item)
 
     # Peletakan Item
