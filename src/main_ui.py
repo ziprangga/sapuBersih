@@ -24,6 +24,13 @@ class SapuBersihUI(QMainWindow, gui.main_window.Ui_MainWindow):
         super().__init__()
         self.setupUi(self)
 
+        # Atur ikon aplikasi
+        icon_path = util.resource_path("resources/sapuBersih.icns")
+        if os.path.exists(icon_path):
+            self.setWindowIcon(QIcon(icon_path))
+        else:
+            self.setWindowIcon(QIcon())
+
         # Inisialisasi logika
         self.logic = SapuBersihLogic(self)
         self.junk_clean = JunkFileCleaner(self)
@@ -33,13 +40,6 @@ class SapuBersihUI(QMainWindow, gui.main_window.Ui_MainWindow):
 
         self.status_label = QLabel()
         self.stop_update = False
-
-        # Atur ikon aplikasi
-        icon_path = util.resource_path("resources/sapuBersih.icns")
-        if os.path.exists(icon_path):
-            self.setWindowIcon(QIcon(icon_path))
-        else:
-            self.setWindowIcon(QIcon())
 
         self.status_label = QLabel("Ready")
         self.status_label.setAlignment(Qt.AlignCenter)

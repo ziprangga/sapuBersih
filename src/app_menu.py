@@ -1,5 +1,5 @@
-from PySide6.QtWidgets import QMenuBar, QMessageBox
-from PySide6.QtGui import QAction
+from PySide6.QtWidgets import QMenuBar, QMessageBox, QDialog, QVBoxLayout, QLabel
+from PySide6.QtGui import QAction, QPixmap
 import src.utility as util
 
 
@@ -19,6 +19,7 @@ class MenuBar(QMenuBar):
         app_menu.addAction(about_action)
 
     def show_credits(self):
+
         # Path file .txt
         file_path = util.resource_path("resources/credits.txt")
         try:
