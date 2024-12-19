@@ -24,7 +24,7 @@ class JunkFileCleaner:
     def scan_temp_files(self, preview=True):
         temp_locations = util.temp_paths()
         patterns = ["*"]  # Semua file
-        excluded_apps = util.exclude_apps()
+        excluded_apps = self.exclude_apple_app()
         found_files = []
         all_files = self.find_files_by_pattern(temp_locations, patterns)
         for file in all_files:
@@ -38,7 +38,7 @@ class JunkFileCleaner:
     def scan_cache(self, preview=True):
         cache_locations = util.cache_paths()
         patterns = ["*"]  # Semua file/folder di dalam Cache
-        excluded_apps = util.exclude_apps()
+        excluded_apps = self.exclude_apple_app()
         found_files = []
         all_files = self.find_files_by_pattern(cache_locations, patterns)
         for file in all_files:
@@ -52,7 +52,7 @@ class JunkFileCleaner:
     def scan_preferences_for_deleted_apps(self, preview=True):
         preference_locations = util.preference_paths()
         patterns = ["*.plist"]  # File .plist
-        excluded_apps = util.exclude_apps()
+        excluded_apps = self.exclude_apple_app()
         found_files = []
         all_files = self.find_files_by_pattern(preference_locations, patterns)
         for file in all_files:
@@ -88,3 +88,11 @@ class JunkFileCleaner:
             self.ui.add_tree_item(
                 base_name, pref_file, "Preference Files", os.access(file, os.W_OK)
             )
+
+    def exclude_apple_app(self):
+        status = self.ui.include_file_checkbox.isChecked()
+
+        if status:
+            return []
+        else:
+            return util.exclude_apple()

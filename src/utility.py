@@ -65,8 +65,6 @@ SCAN_ASSOCIATED = [
 
 EXCLUDED_APPLE_APP = ["com.apple.", "com.apple.."]
 
-include_file_status = False
-
 
 # Fungsi
 def resource_path(relative_path):
@@ -104,11 +102,5 @@ def scan_associated(as_string=False):
     return SCAN_ASSOCIATED
 
 
-def include_file():
-    return include_file_status
-
-
-def exclude_apps():
-    if include_file():
-        return []
+def exclude_apple():
     return EXCLUDED_APPLE_APP

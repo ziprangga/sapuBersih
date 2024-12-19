@@ -16,6 +16,7 @@ QLabel {
 QCheckBox {
     background-color: #00000000; /* Base */
     color: #000000; /* Text */
+     margin-bottom: 10px;
 }
 
 /* QPushButton (macOS-like Buttons) */

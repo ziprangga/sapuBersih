@@ -68,13 +68,13 @@ class Ui_MainWindow(object):
         self.verticalLayout.addWidget(self.selected_file_label)
 
         # Checkbox "Include Specific Files or Apps" berada di sebelah kanan
-        self.include_files_checkbox = QCheckBox(self.centralwidget)
-        self.include_files_checkbox.setObjectName("include_files_checkbox")
-        self.include_files_checkbox.setText("Include Apple Application")
-        self.include_files_checkbox.setChecked(False)  # Atur status checkbox
-        self.include_files_checkbox.setStyleSheet("margin-right: 25px;")
+        self.include_file_checkbox = QCheckBox(self.centralwidget)
+        self.include_file_checkbox.setObjectName("include_file_checkbox")
+        self.include_file_checkbox.setText("Include Apple Application")
+        self.include_file_checkbox.setChecked(False)  # Atur status checkbox
+        self.include_file_checkbox.setStyleSheet("margin-right: 25px;")
         self.verticalLayout.addWidget(
-            self.include_files_checkbox, alignment=Qt.AlignRight
+            self.include_file_checkbox, alignment=Qt.AlignRight
         )
 
         self.horizontalLayout = QHBoxLayout()

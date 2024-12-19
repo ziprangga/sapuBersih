@@ -62,11 +62,8 @@ class SapuBersihUI(QMainWindow, gui.main_window.Ui_MainWindow):
         # Aktifkan drop event untuk window
         self.setAcceptDrops(True)
 
-        # Koneksi event change checkbox
-        self.include_files_checkbox.stateChanged.connect(self.toggle_include_files)
-
-        # Add this method
-        self.include_files_checkbox.setChecked(util.include_file_status)
+        # Checkbox event click
+        self.include_file_checkbox.stateChanged.connect(self.on_checkbox_click)
 
     # Drag n Drop
     def dragEnterEvent(self, event):
@@ -152,22 +149,9 @@ class SapuBersihUI(QMainWindow, gui.main_window.Ui_MainWindow):
     def stop_update_status(self):
         self.stop_update = True
 
-    def toggle_include_files(self, state):
-        # Tampilkan dialog konfirmasi
-        confirm_include = self.show_question(
-            "Are you sure to include Apple apps in the scan?"
-        )
-
-        if confirm_include:
-            # Perbarui status util.include_file_status berdasarkan checkbox
-            util.include_file_status = state == Qt.Checked
-            self.save_choice()  # Simpan pilihan
-
-        else:
-            # Jika pengguna tidak setuju, kembalikan checkbox ke status sebelumnya
-            self.include_files_checkbox.blockSignals(True)
-            self.include_files_checkbox.setChecked(util.include_file_status)
-            self.include_files_checkbox.blockSignals(False)
-
-    def save_choice(self):
-        util.include_file_status = self.include_files_checkbox.isChecked()
+    def on_checkbox_click(self, state):
+        # print(f"on_checkbox_click called with state: {state}")
+        if state == 2:
+            return True
+        elif state == 0:
+            return False
