@@ -60,10 +60,11 @@ class JunkFileCleaner:
         paths = set()
 
         if status:
-            paths.update("")
+            paths.update()
         else:
-            paths.update(util.exclude_apple())
-
+            exclude_apps = util.exclude_apple()
+            if exclude_apps:
+                paths.update(exclude_apps)
         return list(paths)
 
     def scan_junk_files(self, preview=True):
@@ -73,7 +74,9 @@ class JunkFileCleaner:
         patterns_plist = ["*.plist"]
 
         if self.ui.include_file_checkbox.isChecked():
-            confirm = self.ui.show_question("Are you sure?")
+            confirm = self.ui.show_question(
+                "Are you sure to included Apple applications?"
+            )
             if confirm:
                 scan_apple_apps = self.exclude_apple_app()
             else:
