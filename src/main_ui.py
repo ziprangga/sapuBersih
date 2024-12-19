@@ -136,21 +136,20 @@ class SapuBersihUI(QMainWindow, gui.main_window.Ui_MainWindow):
         )
         return reply == QMessageBox.Yes
 
-    def show_log(self, message):
-        self.show_message("Log", message)
-
     def update_status(self, message):
         # Update status bar or label with a message
         self.status_label.setText(message)
         QApplication.processEvents()
         if self.stop_update:
-            self.status_label.clear()  # Bersihkan status label jika update dihentikan
+            self.status_label.clear()
 
     def stop_update_status(self):
         self.stop_update = True
 
+    def show_log(self, message):
+        self.show_message("Log", message)
+
     def on_checkbox_click(self, state):
-        # print(f"on_checkbox_click called with state: {state}")
         if state == 2:
             return True
         elif state == 0:
