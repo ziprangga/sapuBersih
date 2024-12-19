@@ -7,7 +7,6 @@ from src.main_ui import SapuBersihUI
 # Menjalankan Aplikasi
 def main():
     app = QApplication(sys.argv)
-    app.setAttribute(Qt.AA_EnableHighDpiScaling)
     window = SapuBersihUI()
     window.show()
     sys.exit(app.exec())
