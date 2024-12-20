@@ -67,7 +67,7 @@ class JunkFileCleaner:
                 paths.update(exclude_apps)
         return list(paths)
 
-    def scan_junk_files(self, preview=True):
+    def scan_junk_files(self):
         self.ui.clear_tree()
 
         patterns = ["*"]
