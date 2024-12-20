@@ -28,8 +28,7 @@ class SapuBersihUI(QMainWindow, gui.main_window.Ui_MainWindow):
         icon_path = util.icon_path()
         if os.path.exists(icon_path):
             icon = QIcon(icon_path)
-            resized_icon = icon.pixmap(64)
-            self.setWindowIcon(QIcon(resized_icon))
+            self.setWindowIcon(QIcon(icon))
         else:
             self.setWindowIcon(QIcon())
 
