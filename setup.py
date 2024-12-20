@@ -8,7 +8,7 @@ def read_file(file_name):
 
 
 setup(
-    name="sapu_bersih_app",
+    name="sapuBersih",
     version="1.1.0",
     author="ziprangga",
     author_email="ziprangga@gmail.com",
