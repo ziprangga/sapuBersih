@@ -129,10 +129,9 @@ class ResourceManager:
 
 
 class StyleManager:
-
     @staticmethod
     def apply_stylesheet(
-        self, target=None, stylesheet_path_dark=None, stylesheet_path_light=None
+        target=None, stylesheet_path_dark=None, stylesheet_path_light=None
     ):
         """Apply stylesheet based on macOS dark mode detection to the target."""
         if not stylesheet_path_dark or not stylesheet_path_light:
