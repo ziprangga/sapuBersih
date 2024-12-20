@@ -2,7 +2,7 @@ import os
 import subprocess
 from PySide6.QtWidgets import QFileDialog
 from pathlib import Path
-import src.utility as util
+from src.utility import ResourceManager as util
 
 
 class SapuBersihLogic:

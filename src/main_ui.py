@@ -10,11 +10,11 @@ from PySide6.QtWidgets import (
     QApplication,
 )
 from PySide6.QtCore import Qt, QFileInfo
-from PySide6.QtGui import QIcon
+from PySide6.QtGui import QIcon, QPixmap
 from src.clean_app_logic import SapuBersihLogic
 from src.clean_junk_logic import JunkFileCleaner
 from src.app_menu import MenuBar
-import src.utility as util
+from src.utility import ResourceManager as util
 
 
 # User Interface
@@ -25,9 +25,11 @@ class SapuBersihUI(QMainWindow, gui.main_window.Ui_MainWindow):
         self.setupUi(self)
 
         # Atur ikon aplikasi
-        icon_path = util.resource_path("resources/sapuBersih.icns")
+        icon_path = util.icon_path()
         if os.path.exists(icon_path):
-            self.setWindowIcon(QIcon(icon_path))
+            icon = QIcon(icon_path)
+            resized_icon = icon.pixmap(64)
+            self.setWindowIcon(QIcon(resized_icon))
         else:
             self.setWindowIcon(QIcon())
 
@@ -124,6 +126,7 @@ class SapuBersihUI(QMainWindow, gui.main_window.Ui_MainWindow):
         item.setFlags(Qt.ItemIsEnabled)
         self.tree.addTopLevelItem(item)
 
+    # Set window icon for QMessageBox and QDialog
     def show_message(self, title, message, icon=QMessageBox.Information):
         QMessageBox(icon, title, message, QMessageBox.Ok, self).exec()
 
@@ -132,7 +135,11 @@ class SapuBersihUI(QMainWindow, gui.main_window.Ui_MainWindow):
 
     def show_question(self, message, default=QMessageBox.No):
         reply = QMessageBox.question(
-            self, "Confirmation", message, QMessageBox.Yes | QMessageBox.No, default
+            self,
+            "Confirmation",
+            message,
+            QMessageBox.Yes | QMessageBox.No,
+            default,
         )
         return reply == QMessageBox.Yes
 

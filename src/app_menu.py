@@ -1,8 +1,8 @@
 from PySide6.QtWidgets import QMenuBar, QMessageBox
 from PySide6.QtGui import QAction, QIcon
 from PySide6.QtCore import Qt
-import src.utility as util
 from gui.about_window import AboutUI
+from src.utility import ResourceManager as util
 
 
 # Menu Bar
@@ -23,7 +23,7 @@ class MenuBar(QMenuBar):
         app_version = "Version: 1.1.0"
         author_text = "Author: zi\n\n"
         description_text = author_text
-        file_path = util.resource_path("resources/credits.txt")
+        file_path = util.credits_path()
         try:
 
             with open(file_path, "r", encoding="utf-8") as file:
@@ -34,7 +34,7 @@ class MenuBar(QMenuBar):
         except Exception as e:
             description_text += f"Credits:\nAn error occurred: {e}"
 
-        logo_path = util.resource_path("resources/sapuBersih.icns")
+        logo_path = util.icon_path()
         logo_icon = QIcon(logo_path)
 
         self.about_dialog = AboutUI(

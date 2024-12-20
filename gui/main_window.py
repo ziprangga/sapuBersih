@@ -47,9 +47,11 @@ from PySide6.QtWidgets import (
     QHBoxLayout,
     QWidget,
 )
-import src.utility as util
 import subprocess
+import platform
+import ctypes
 from src.app_menu import MenuBar
+from src.utility import ResourceManager as util
 
 
 class Ui_MainWindow(object):
@@ -110,8 +112,9 @@ class Ui_MainWindow(object):
         self.scan_button.setMouseTracking(True)
 
         self.apply_stylesheet(
-            util.resource_path("gui/style_dark.qss"),
-            util.resource_path("gui/style_light.qss"),
+            self.centralwidget,
+            util.qss_dark_path(),
+            util.qss_light_path(),
         )
 
     def retranslateUi(self, MainWindow):
@@ -139,25 +142,47 @@ class Ui_MainWindow(object):
             QCoreApplication.translate("MainWindow", "Move to Trash", None)
         )
 
-    def apply_stylesheet(self, stylesheet_path_dark, stylesheet_path_light):
-        # Gunakan osascript untuk membaca preferensi sistem
-        result = subprocess.run(
-            ["defaults", "read", "-g", "AppleInterfaceStyle"],
-            capture_output=True,
-            text=True,
+    def apply_stylesheet(
+        self, target=None, stylesheet_path_dark=None, stylesheet_path_light=None
+    ):
+        """Apply stylesheet based on macOS dark mode detection to the target."""
+        if not stylesheet_path_dark or not stylesheet_path_light:
+            raise ValueError(
+                "Both stylesheet_path_dark and stylesheet_path_light must be provided."
+            )
+
+        # Detect macOS dark mode
+        is_dark_mode = False
+        try:
+            result = subprocess.run(
+                ["defaults", "read", "-g", "AppleInterfaceStyle"],
+                capture_output=True,
+                text=True,
+            )
+            is_dark_mode = result.stdout.strip().lower() == "dark"
+        except Exception as e:
+            print(f"Error detecting dark mode: {e}")
+
+        # Choose the appropriate stylesheet
+        stylesheet_path = (
+            stylesheet_path_dark if is_dark_mode else stylesheet_path_light
         )
-        is_dark_mode = result.stdout.strip() == "Dark"
 
-        settings = QSettings("Apple Global Domain", QSettings.NativeFormat)
-        for key in settings.allKeys():
-            print(f"{key}: {settings.value(key)}")
+        try:
+            with open(stylesheet_path, "r") as file:
+                qss = file.read()
 
-        if is_dark_mode:
-            stylesheet_path = stylesheet_path_dark
-        else:
-            stylesheet_path = stylesheet_path_light
-
-        with open(stylesheet_path, "r") as file:
-            qss = file.read()
-
-        QApplication.instance().setStyleSheet(qss)
+            if target is None:
+                # Apply globally using QApplication
+                QApplication.instance().setStyleSheet(qss)
+            elif isinstance(target, QWidget):
+                # Apply to a specific QWidget
+                target.setStyleSheet(qss)
+            else:
+                raise ValueError(
+                    "Target must be either None, QWidget, or a QMainWindow instance."
+                )
+        except FileNotFoundError:
+            print(f"Stylesheet file not found: {stylesheet_path}")
+        except Exception as e:
+            print(f"Error applying stylesheet: {e}")

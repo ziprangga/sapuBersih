@@ -1,6 +1,6 @@
 import os
 from pathlib import Path
-import src.utility as util
+from src.utility import ResourceManager as util
 
 
 class JunkFileCleaner:
