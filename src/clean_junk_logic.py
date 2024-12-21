@@ -75,14 +75,14 @@ class JunkFileCleaner:
 
         if self.ui.include_file_checkbox.isChecked():
             confirm = self.ui.show_question(
-                "Are you sure to included Apple applications?"
+                "Are you sure to include Apple applications?"
             )
             if confirm:
                 scan_apple_apps = self.include_apple_app()
             else:
                 self.ui.include_file_checkbox.setChecked(False)
                 scan_apple_apps = []
-                return
+                return []
         else:
             scan_apple_apps = self.include_apple_app()
 
@@ -92,7 +92,7 @@ class JunkFileCleaner:
             util.preference_paths(), patterns_plist, scan_apple_apps
         )
 
-        # Tambahkan file ke UI dengan path lengkap
+        # Add files to the UI
         for file in temp_files:
             base_name = os.path.basename(file)
             self.ui.add_tree_item(
@@ -102,11 +102,14 @@ class JunkFileCleaner:
         for cache_dir in cache_files:
             base_name = os.path.basename(cache_dir)
             self.ui.add_tree_item(
-                base_name, cache_dir, "Cache Files", os.access(file, os.W_OK)
+                base_name, cache_dir, "Cache Files", os.access(cache_dir, os.W_OK)
             )
 
         for pref_file in pref_files:
             base_name = os.path.basename(pref_file)
             self.ui.add_tree_item(
-                base_name, pref_file, "Preference Files", os.access(file, os.W_OK)
+                base_name, pref_file, "Preference Files", os.access(pref_file, os.W_OK)
             )
+
+        # Return the combined list of files
+        return temp_files + cache_files + pref_files
