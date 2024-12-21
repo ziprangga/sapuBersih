@@ -65,7 +65,7 @@ class ResourceManager:
         Path("/usr/local/var"),
     ]
 
-    EXCLUDED_APPLE_APP = ["com.apple.", "com.apple.."]
+    INCLUDE_APPLE_APP = ["com.apple.", "com.apple.."]
 
     ICON = "resources/sapuBersih.icns"
     CREDITS = "resources/credits.txt"
@@ -108,8 +108,8 @@ class ResourceManager:
         return cls.SCAN_ASSOCIATED
 
     @classmethod
-    def exclude_apple(cls):
-        return cls.EXCLUDED_APPLE_APP
+    def include_apple(cls):
+        return cls.INCLUDE_APPLE_APP
 
     @classmethod
     def icon_path(cls):

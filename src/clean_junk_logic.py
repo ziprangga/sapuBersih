@@ -21,40 +21,40 @@ class JunkFileCleaner:
             self.ui.stop_update_status()
         return list(found_files)
 
-    def scan_temp_files(self, scan_path, patterns, excluded_apps):
+    def scan_temp_files(self, scan_path, patterns, included_apps):
         found_files = []
         all_files = self.find_files_by_pattern(scan_path, patterns)
         for file in all_files:
-            for excluded in excluded_apps:
-                if excluded in file:
+            for included in included_apps:
+                if included in file:
                     break
             else:
                 found_files.append(file)
         return found_files
 
-    def scan_cache(self, scan_path, patterns, excluded_apps):
+    def scan_cache(self, scan_path, patterns, included_apps):
         found_files = []
         all_files = self.find_files_by_pattern(scan_path, patterns)
         for file in all_files:
-            for excluded in excluded_apps:
-                if excluded in file:
+            for included in included_apps:
+                if included in file:
                     break
             else:
                 found_files.append(file)
         return found_files
 
-    def scan_preferences_for_deleted_apps(self, scan_path, patterns, excluded_apps):
+    def scan_preferences_for_deleted_apps(self, scan_path, patterns, included_apps):
         found_files = []
         all_files = self.find_files_by_pattern(scan_path, patterns)
         for file in all_files:
-            for excluded in excluded_apps:
-                if excluded in file:
+            for included in included_apps:
+                if included in file:
                     break
             else:
                 found_files.append(file)
         return found_files
 
-    def exclude_apple_app(self):
+    def include_apple_app(self):
         status = self.ui.include_file_checkbox.isChecked()
 
         paths = set()
@@ -62,9 +62,9 @@ class JunkFileCleaner:
         if status:
             paths.update()
         else:
-            exclude_apps = util.exclude_apple()
-            if exclude_apps:
-                paths.update(exclude_apps)
+            include_apps = util.include_apple()
+            if include_apps:
+                paths.update(include_apps)
         return list(paths)
 
     def scan_junk_files(self):
@@ -78,13 +78,13 @@ class JunkFileCleaner:
                 "Are you sure to included Apple applications?"
             )
             if confirm:
-                scan_apple_apps = self.exclude_apple_app()
+                scan_apple_apps = self.include_apple_app()
             else:
                 self.ui.include_file_checkbox.setChecked(False)
                 scan_apple_apps = []
                 return
         else:
-            scan_apple_apps = self.exclude_apple_app()
+            scan_apple_apps = self.include_apple_app()
 
         temp_files = self.scan_temp_files(util.temp_paths(), patterns, scan_apple_apps)
         cache_files = self.scan_cache(util.cache_paths(), patterns, scan_apple_apps)
