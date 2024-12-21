@@ -8,7 +8,32 @@ from PySide6.QtWidgets import QApplication, QWidget
 class ResourceManager:
 
     DEFAULT_RECEIPT_PATH = Path("/private/var/db/receipts")
-    ADD_RECEIPT_PATH = []
+    ADD_RECEIPT_PATH = [Path.home() / "Library/Receipts"]
+
+    SIP_PROTECTED_PATHS = [
+        Path("/System"),
+        Path("/usr"),
+        Path("/bin"),
+        Path("/sbin"),
+        Path("/Applications/System Preferences.app"),
+    ]
+
+    APPLICATION_SUPPORT_PATH = [
+        Path.home() / "Library/Application Support",
+        Path("/Library/Application Support"),
+    ]
+
+    LOG_PATH = [
+        Path.home() / "Library/Logs",
+        Path("/Library/Logs"),
+    ]
+
+    TEMP_PATH = [
+        Path(os.getenv("TMPDIR", "/private/var/tmp")),
+        Path("/private/var/tmp"),
+        Path("/tmp"),
+        Path("/private/var/folders"),
+    ]
 
     CACHE_PATH = [
         Path.home() / "Library/Caches",
@@ -18,15 +43,6 @@ class ResourceManager:
     PREFERENCE_PATH = [
         Path.home() / "Library/Preferences",
         Path("/Library/Preferences"),
-    ]
-
-    TEMP_PATH = [
-        Path(os.getenv("TMPDIR", "/private/var/tmp")),
-        Path("/private/var/tmp"),
-        Path("/tmp"),
-        Path("/private/var/folders"),
-        Path("/Library/Caches"),
-        Path.home() / "Library/Caches",
     ]
 
     SCAN_ASSOCIATED = [
@@ -67,6 +83,18 @@ class ResourceManager:
 
     INCLUDE_APPLE_APP = ["com.apple.", "com.apple.."]
 
+    PATTERNS_GENERAL_PAR = [
+        "*",
+        "*.app.log",
+        "*.cache",
+        "*.temp",
+        "*.swap",
+        "*.tmp",
+        "*.bak",
+        "*~",
+    ]
+    PATTERNS_PREF_PAR = ["*.plist"]
+
     ICON = "resources/sapuBersih.icns"
     CREDITS = "resources/credits.txt"
     QSS_DARK = "gui/style_dark.qss"
@@ -84,6 +112,24 @@ class ResourceManager:
         return [str(path) for path in paths] if as_string else paths
 
     @classmethod
+    def app_support_paths(cls, as_string=False):
+        if as_string:
+            return [str(path) for path in cls.APPLICATION_SUPPORT_PATH]
+        return cls.APPLICATION_SUPPORT_PATH
+
+    @classmethod
+    def log_paths(cls, as_string=False):
+        if as_string:
+            return [str(path) for path in cls.LOG_PATH]
+        return cls.LOG_PATH
+
+    @classmethod
+    def temp_paths(cls, as_string=False):
+        if as_string:
+            return [str(path) for path in cls.TEMP_PATH]
+        return cls.TEMP_PATH
+
+    @classmethod
     def cache_paths(cls, as_string=False):
         if as_string:
             return [str(path) for path in cls.CACHE_PATH]
@@ -96,20 +142,28 @@ class ResourceManager:
         return cls.PREFERENCE_PATH
 
     @classmethod
-    def temp_paths(cls, as_string=False):
-        if as_string:
-            return [str(path) for path in cls.TEMP_PATH]
-        return cls.TEMP_PATH
-
-    @classmethod
     def scan_associated(cls, as_string=False):
         if as_string:
             return [str(path) for path in cls.SCAN_ASSOCIATED]
         return cls.SCAN_ASSOCIATED
 
     @classmethod
+    def sip_paths(cls, as_string=False):
+        if as_string:
+            return [str(path) for path in cls.SIP_PROTECTED_PATHS]
+        return cls.SIP_PROTECTED_PATHS
+
+    @classmethod
     def include_apple(cls):
         return cls.INCLUDE_APPLE_APP
+
+    @classmethod
+    def patterns_generals(cls):
+        return cls.PATTERNS_GENERAL_PAR
+
+    @classmethod
+    def patterns_pref(cls):
+        return cls.PATTERNS_PREF_PAR
 
     @classmethod
     def icon_path(cls):
