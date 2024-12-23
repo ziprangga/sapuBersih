@@ -32,7 +32,7 @@ class ResourceManager:
         Path(os.getenv("TMPDIR", "/private/var/tmp")),
         Path("/private/var/tmp"),
         Path("/tmp"),
-        Path("/private/var/folders"),
+        # Path("/private/var/folders"),
     ]
 
     CACHE_PATH = [
