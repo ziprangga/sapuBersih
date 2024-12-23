@@ -73,15 +73,20 @@ class JunkFileCleaner:
         path_temp.append(util.get_darwin_user_temp_dir(as_path=True))
         path_cache = util.cache_paths()
         path_cache.append(util.get_darwin_user_cache_dir(as_path=True))
+        path_log = util.log_paths()
+        path_app_support = util.app_support_paths()
+        path_pref = util.preference_paths()
 
         temp_files = self.scan_files(path_temp, patterns, scan_apple_apps)
         cache_files = self.scan_files(path_cache, patterns, scan_apple_apps)
-        pref_files = self.scan_files(
-            util.preference_paths(), patterns_plist, scan_apple_apps
-        )
+        log_files = self.scan_files(path_log, patterns, scan_apple_apps)
+        app_support_files = self.scan_files(path_app_support, patterns, scan_apple_apps)
+        pref_files = self.scan_files(path_pref, patterns_plist, scan_apple_apps)
 
         self.add_file_to_ui(temp_files, "Temporary Files")
         self.add_file_to_ui(cache_files, "Cache Files")
+        self.add_file_to_ui(log_files, "Log Files")
+        self.add_file_to_ui(app_support_files, "App Support Files")
         self.add_file_to_ui(pref_files, "Preference Files")
 
         return temp_files + cache_files + pref_files

@@ -15,16 +15,26 @@ class ResourceManager:
         Path("/Library/Caches"),
     ]
 
-    PREFERENCE_PATH = [
-        Path.home() / "Library/Preferences",
-        Path("/Library/Preferences"),
-    ]
-
     TEMP_PATH = [
         Path(os.getenv("TMPDIR", "/private/var/tmp")),
         Path("/private/var/tmp"),
         Path("/tmp"),
         Path("/private/var/folders"),
+    ]
+
+    APP_LOG_PATH = [
+        Path.home() / "Library/Logs",
+        Path("/Library/Logs"),
+    ]
+
+    APP_SUPPORT_PATH = [
+        Path.home() / "Library/Application Support",
+        Path("/Library/Application Support"),
+    ]
+
+    PREFERENCE_PATH = [
+        Path.home() / "Library/Preferences",
+        Path("/Library/Preferences"),
     ]
 
     SCAN_ASSOCIATED = [
@@ -108,16 +118,28 @@ class ResourceManager:
         return cls.CACHE_PATH
 
     @classmethod
-    def preference_paths(cls, as_string=False):
-        if as_string:
-            return [str(path) for path in cls.PREFERENCE_PATH]
-        return cls.PREFERENCE_PATH
-
-    @classmethod
     def temp_paths(cls, as_string=False):
         if as_string:
             return [str(path) for path in cls.TEMP_PATH]
         return cls.TEMP_PATH
+
+    @classmethod
+    def log_paths(cls, as_string=False):
+        if as_string:
+            return [str(path) for path in cls.APP_LOG_PATH]
+        return cls.APP_LOG_PATH
+
+    @classmethod
+    def app_support_paths(cls, as_string=False):
+        if as_string:
+            return [str(path) for path in cls.APP_SUPPORT_PATH]
+        return cls.APP_SUPPORT_PATH
+
+    @classmethod
+    def preference_paths(cls, as_string=False):
+        if as_string:
+            return [str(path) for path in cls.PREFERENCE_PATH]
+        return cls.PREFERENCE_PATH
 
     @classmethod
     def scan_associated(cls, as_string=False):
