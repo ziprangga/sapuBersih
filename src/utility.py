@@ -8,32 +8,7 @@ from PySide6.QtWidgets import QApplication, QWidget
 class ResourceManager:
 
     DEFAULT_RECEIPT_PATH = Path("/private/var/db/receipts")
-    ADD_RECEIPT_PATH = [Path.home() / "Library/Receipts"]
-
-    SIP_PROTECTED_PATHS = [
-        Path("/System"),
-        Path("/usr"),
-        Path("/bin"),
-        Path("/sbin"),
-        Path("/Applications/System Preferences.app"),
-    ]
-
-    APPLICATION_SUPPORT_PATH = [
-        Path.home() / "Library/Application Support",
-        Path("/Library/Application Support"),
-    ]
-
-    LOG_PATH = [
-        Path.home() / "Library/Logs",
-        Path("/Library/Logs"),
-    ]
-
-    TEMP_PATH = [
-        Path(os.getenv("TMPDIR", "/private/var/tmp")),
-        Path("/private/var/tmp"),
-        Path("/tmp"),
-        # Path("/private/var/folders"),
-    ]
+    ADD_RECEIPT_PATH = []
 
     CACHE_PATH = [
         Path.home() / "Library/Caches",
@@ -43,6 +18,13 @@ class ResourceManager:
     PREFERENCE_PATH = [
         Path.home() / "Library/Preferences",
         Path("/Library/Preferences"),
+    ]
+
+    TEMP_PATH = [
+        Path(os.getenv("TMPDIR", "/private/var/tmp")),
+        Path("/private/var/tmp"),
+        Path("/tmp"),
+        Path("/private/var/folders"),
     ]
 
     SCAN_ASSOCIATED = [
@@ -83,18 +65,6 @@ class ResourceManager:
 
     INCLUDE_APPLE_APP = ["com.apple.", "com.apple.."]
 
-    PATTERNS_GENERAL_PAR = [
-        "*",
-        "*.app.log",
-        "*.cache",
-        "*.temp",
-        "*.swap",
-        "*.tmp",
-        "*.bak",
-        "*~",
-    ]
-    PATTERNS_PREF_PAR = ["*.plist"]
-
     ICON = "resources/sapuBersih.icns"
     CREDITS = "resources/credits.txt"
     QSS_DARK = "gui/style_dark.qss"
@@ -106,28 +76,30 @@ class ResourceManager:
         base_path = getattr(sys, "_MEIPASS", os.path.abspath("."))
         return os.path.join(base_path, relative_path)
 
+    @staticmethod
+    def filter_existing_paths(paths):
+        return [path for path in paths if path.exists()]
+
+    @staticmethod
+    def get_darwin_user_cache_dir(as_path=False):
+        result = subprocess.run(
+            ["getconf", "DARWIN_USER_CACHE_DIR"], capture_output=True, text=True
+        )
+        cache_user_dir = result.stdout.strip()
+        return Path(cache_user_dir) if as_path else cache_user_dir
+
+    @staticmethod
+    def get_darwin_user_temp_dir(as_path=False):
+        result = subprocess.run(
+            ["getconf", "DARWIN_USER_TEMP_DIR"], capture_output=True, text=True
+        )
+        temp_user_dir = result.stdout.strip()
+        return Path(temp_user_dir) if as_path else temp_user_dir
+
     @classmethod
     def receipt_paths(cls, as_string=False):
         paths = [cls.DEFAULT_RECEIPT_PATH] + cls.ADD_RECEIPT_PATH
         return [str(path) for path in paths] if as_string else paths
-
-    @classmethod
-    def app_support_paths(cls, as_string=False):
-        if as_string:
-            return [str(path) for path in cls.APPLICATION_SUPPORT_PATH]
-        return cls.APPLICATION_SUPPORT_PATH
-
-    @classmethod
-    def log_paths(cls, as_string=False):
-        if as_string:
-            return [str(path) for path in cls.LOG_PATH]
-        return cls.LOG_PATH
-
-    @classmethod
-    def temp_paths(cls, as_string=False):
-        if as_string:
-            return [str(path) for path in cls.TEMP_PATH]
-        return cls.TEMP_PATH
 
     @classmethod
     def cache_paths(cls, as_string=False):
@@ -142,28 +114,20 @@ class ResourceManager:
         return cls.PREFERENCE_PATH
 
     @classmethod
+    def temp_paths(cls, as_string=False):
+        if as_string:
+            return [str(path) for path in cls.TEMP_PATH]
+        return cls.TEMP_PATH
+
+    @classmethod
     def scan_associated(cls, as_string=False):
         if as_string:
             return [str(path) for path in cls.SCAN_ASSOCIATED]
         return cls.SCAN_ASSOCIATED
 
     @classmethod
-    def sip_paths(cls, as_string=False):
-        if as_string:
-            return [str(path) for path in cls.SIP_PROTECTED_PATHS]
-        return cls.SIP_PROTECTED_PATHS
-
-    @classmethod
     def include_apple(cls):
         return cls.INCLUDE_APPLE_APP
-
-    @classmethod
-    def patterns_generals(cls):
-        return cls.PATTERNS_GENERAL_PAR
-
-    @classmethod
-    def patterns_pref(cls):
-        return cls.PATTERNS_PREF_PAR
 
     @classmethod
     def icon_path(cls):
