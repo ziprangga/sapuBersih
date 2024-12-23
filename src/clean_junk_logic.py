@@ -54,9 +54,6 @@ class JunkFileCleaner:
     def scan_junk_files(self):
         self.ui.clear_tree()
 
-        patterns = ["*"]
-        patterns_plist = ["*.plist"]
-
         if self.ui.include_file_checkbox.isChecked():
             confirm = self.ui.show_question(
                 "Are you sure to include Apple applications?"
@@ -70,8 +67,15 @@ class JunkFileCleaner:
         else:
             scan_apple_apps = self.include_apple_app()
 
-        temp_files = self.scan_files(util.temp_paths(), patterns, scan_apple_apps)
-        cache_files = self.scan_files(util.cache_paths(), patterns, scan_apple_apps)
+        patterns = ["*"]
+        patterns_plist = ["*.plist"]
+        path_temp = util.temp_paths()
+        path_temp.append(util.get_darwin_user_temp_dir(as_path=True))
+        path_cache = util.cache_paths()
+        path_cache.append(util.get_darwin_user_cache_dir(as_path=True))
+
+        temp_files = self.scan_files(path_temp, patterns, scan_apple_apps)
+        cache_files = self.scan_files(path_cache, patterns, scan_apple_apps)
         pref_files = self.scan_files(
             util.preference_paths(), patterns_plist, scan_apple_apps
         )

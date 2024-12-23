@@ -169,21 +169,10 @@ class SapuBersihLogic:
 
     # Pencarian pada direktori yang terkait
     def find_app_data(self, app_name, bundle_identifier):
-        def get_darwin_user_cache_dir():
-            result = subprocess.run(
-                ["getconf", "DARWIN_USER_CACHE_DIR"], capture_output=True, text=True
-            )
-            return result.stdout.strip()
-
-        def get_darwin_user_temp_dir():
-            result = subprocess.run(
-                ["getconf", "DARWIN_USER_TEMP_DIR"], capture_output=True, text=True
-            )
-            return result.stdout.strip()
 
         locations = util.scan_associated()
-        locations.append(Path(get_darwin_user_cache_dir()))
-        locations.append(Path(get_darwin_user_temp_dir()))
+        locations.append(util.get_darwin_user_cache_dir(as_path=True))
+        locations.append(util.get_darwin_user_temp_dir(as_path=True))
 
         paths = set()
 

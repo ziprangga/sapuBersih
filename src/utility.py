@@ -25,8 +25,6 @@ class ResourceManager:
         Path("/private/var/tmp"),
         Path("/tmp"),
         Path("/private/var/folders"),
-        Path("/Library/Caches"),
-        Path.home() / "Library/Caches",
     ]
 
     SCAN_ASSOCIATED = [
@@ -77,6 +75,26 @@ class ResourceManager:
         # Dapatkan path absolut ke file sumber daya
         base_path = getattr(sys, "_MEIPASS", os.path.abspath("."))
         return os.path.join(base_path, relative_path)
+
+    @staticmethod
+    def filter_existing_paths(paths):
+        return [path for path in paths if path.exists()]
+
+    @staticmethod
+    def get_darwin_user_cache_dir(as_path=False):
+        result = subprocess.run(
+            ["getconf", "DARWIN_USER_CACHE_DIR"], capture_output=True, text=True
+        )
+        cache_user_dir = result.stdout.strip()
+        return Path(cache_user_dir) if as_path else cache_user_dir
+
+    @staticmethod
+    def get_darwin_user_temp_dir(as_path=False):
+        result = subprocess.run(
+            ["getconf", "DARWIN_USER_TEMP_DIR"], capture_output=True, text=True
+        )
+        temp_user_dir = result.stdout.strip()
+        return Path(temp_user_dir) if as_path else temp_user_dir
 
     @classmethod
     def receipt_paths(cls, as_string=False):
