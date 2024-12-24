@@ -7,6 +7,25 @@ from PySide6.QtWidgets import QApplication, QWidget
 
 class ResourceManager:
 
+    PATTERNS_GENERAL = [
+        # Log files
+        "*.log",
+        "*.err",
+        "*.out",
+        # Temporary files
+        "*.tmp",
+        "*.temp",
+        "*~",
+        "*.swp",
+        "*.tmp~",
+        # Cache files
+        "*.cache",
+        "*.tmp.cache",
+        "*.pkg",
+    ]
+
+    PATTERN_PREF = ["*.plist"]
+
     DEFAULT_RECEIPT_PATH = Path("/private/var/db/receipts")
     ADD_RECEIPT_PATH = []
 
@@ -20,6 +39,7 @@ class ResourceManager:
         Path("/private/var/tmp"),
         Path("/tmp"),
         Path("/private/var/folders"),
+        Path.home() / "/Library/Saved Application State",
     ]
 
     APP_LOG_PATH = [
@@ -72,6 +92,8 @@ class ResourceManager:
         Path("/usr/local/share"),
         Path("/usr/local/var"),
     ]
+
+    APP_PATH = [Path.home() / "Applications", Path("Applications")]
 
     INCLUDE_APPLE_APP = ["com.apple.", "com.apple.."]
 
@@ -146,6 +168,20 @@ class ResourceManager:
         if as_string:
             return [str(path) for path in cls.SCAN_ASSOCIATED]
         return cls.SCAN_ASSOCIATED
+
+    @classmethod
+    def app_paths(cls, as_string=False):
+        if as_string:
+            return [str(path) for path in cls.APP_PATH]
+        return cls.APP_PATH
+
+    @classmethod
+    def gen_patterns(cls):
+        return cls.PATTERNS_GENERAL
+
+    @classmethod
+    def pref_patterns(cls):
+        return cls.PATTERN_PREF
 
     @classmethod
     def include_apple(cls):

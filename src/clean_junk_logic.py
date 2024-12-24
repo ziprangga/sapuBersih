@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+from datetime import datetime, timedelta
 from src.utility import ResourceManager as util
 
 
@@ -7,12 +8,44 @@ class JunkFileCleaner:
     def __init__(self, ui_handle):
         self.ui = ui_handle
 
+    def metadata_file(self, filepath, age_days=30, min_size=0):
+        try:
+            stats = Path(filepath).stat()
+            last_modified = datetime.fromtimestamp(stats.st_mtime)
+            file_age = datetime.now() - last_modified
+
+            return file_age > timedelta(days=age_days) and stats.st_size >= min_size
+        except FileNotFoundError:
+            # File may no longer exist
+            return False
+        except Exception as e:
+            print(f"Error accessing file {filepath}: {e}")
+            return False
+
+    def include_apple_app(self):
+        status = self.ui.include_file_checkbox.isChecked()
+
+        apple_app_patterns = util.include_apple()
+
+        paths = set()
+
+        if not status:
+            # If status is unchecked, exclude Apple app-related patterns
+            paths.update(apple_app_patterns)
+        else:
+            # If status is checked, include Apple app-related patterns
+            paths.difference_update(apple_app_patterns)
+
+        return list(paths)
+
     def find_files_by_pattern(self, locations, patterns):
         # Temukan file berdasarkan pola dalam lokasi tertentu
         found_files = set()
         for location in locations:
             location_path = Path(location)
-            self.ui.update_status(f"Searching in {location_path}...")
+            self.ui.update_status(
+                f"Searching in {location_path}...",
+            )
             if location_path.exists() and location_path.is_dir():
                 for pattern in patterns:
                     found_files.update(
@@ -21,29 +54,19 @@ class JunkFileCleaner:
             self.ui.stop_update_status()
         return list(found_files)
 
-    def scan_files(self, scan_path, patterns, included_apps):
-        found_files = []
-        all_files = self.find_files_by_pattern(scan_path, patterns)
-        for file in all_files:
-            for included in included_apps:
-                if included in file:
-                    break
-            else:
-                found_files.append(file)
-        return found_files
+    def scan_files(self, scan_paths, patterns, age_days=30, min_size=0):
+        junk_files_found = []
 
-    def include_apple_app(self):
-        status = self.ui.include_file_checkbox.isChecked()
+        found_files = self.find_files_by_pattern(scan_paths, patterns)
 
-        paths = set()
+        include_apps = self.include_apple_app()
+        for file in found_files:
+            if self.metadata_file(file, age_days=age_days, min_size=min_size):
+                if any(app_pattern in file for app_pattern in include_apps):
+                    continue
+                junk_files_found.append(file)
 
-        if status:
-            paths.update()
-        else:
-            include_apps = util.include_apple()
-            if include_apps:
-                paths.update(include_apps)
-        return list(paths)
+        return junk_files_found
 
     def add_file_to_ui(self, files, category):
         for file in files:
@@ -53,40 +76,34 @@ class JunkFileCleaner:
 
     def scan_junk_files(self):
         self.ui.clear_tree()
+        self.ui.status_label.clear()
+
+        patterns = util.gen_patterns()
 
         if self.ui.include_file_checkbox.isChecked():
             confirm = self.ui.show_question(
                 "Are you sure to include Apple applications?"
             )
             if confirm:
-                scan_apple_apps = self.include_apple_app()
+                pass
             else:
                 self.ui.include_file_checkbox.setChecked(False)
-                scan_apple_apps = []
-                return []
-        else:
-            scan_apple_apps = self.include_apple_app()
+                patterns.extend(util.include_apple())
 
-        patterns = ["*"]
-        patterns_plist = ["*.plist"]
-        path_temp = util.temp_paths()
-        path_temp.append(util.get_darwin_user_temp_dir(as_path=True))
-        path_cache = util.cache_paths()
-        path_cache.append(util.get_darwin_user_cache_dir(as_path=True))
+        path_temp = util.temp_paths() + [util.get_darwin_user_temp_dir(as_path=True)]
+        path_cache = util.cache_paths() + [util.get_darwin_user_cache_dir(as_path=True)]
         path_log = util.log_paths()
-        path_app_support = util.app_support_paths()
-        path_pref = util.preference_paths()
 
-        temp_files = self.scan_files(path_temp, patterns, scan_apple_apps)
-        cache_files = self.scan_files(path_cache, patterns, scan_apple_apps)
-        log_files = self.scan_files(path_log, patterns, scan_apple_apps)
-        app_support_files = self.scan_files(path_app_support, patterns, scan_apple_apps)
-        pref_files = self.scan_files(path_pref, patterns_plist, scan_apple_apps)
+        temp_files = self.scan_files(path_temp, patterns)
+        cache_files = self.scan_files(path_cache, patterns)
+        log_files = self.scan_files(path_log, patterns)
 
         self.add_file_to_ui(temp_files, "Temporary Files")
         self.add_file_to_ui(cache_files, "Cache Files")
         self.add_file_to_ui(log_files, "Log Files")
-        self.add_file_to_ui(app_support_files, "App Support Files")
-        self.add_file_to_ui(pref_files, "Preference Files")
 
-        return temp_files + cache_files + pref_files
+        # Update the status with the current item count (pilih salah satu)
+        total_items = self.ui.tree.topLevelItemCount()
+        self.ui.update_status(f"Total items: {total_items}")
+
+        return temp_files + cache_files + log_files

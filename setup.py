@@ -9,7 +9,7 @@ def read_file(file_name):
 
 setup(
     name="sapuBersih",
-    version="1.1.0",
+    version="1.5.0",
     author="ziprangga",
     author_email="ziprangga@gmail.com",
     description="A Cleaner Application",

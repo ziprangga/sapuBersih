@@ -120,31 +120,18 @@ class SapuBersihUI(QMainWindow, gui.main_window.Ui_MainWindow):
         item.setIcon(0, icon)
         self.tree.addTopLevelItem(item)
 
-        # Update the status with the current item count (pilih salah satu)
-        total_items = self.tree.topLevelItemCount()
-        # self.total_items += 1
-
-        self.update_status(f"Total items: {total_items}")
-
-    # def remove_tree_item(self, item):
-    #     if item:
-    #         index = self.tree.indexOfTopLevelItem(item)
-    #         if index != -1:
-    #             self.tree.takeTopLevelItem(index)
-    #             # Decrement total_items counter and update status
-    #             self.total_items -= 1
-    #             self.update_status(f"Total items: {self.total_items}")
+    def remove_tree_item(self, item):
+        if item:
+            index = self.tree.indexOfTopLevelItem(item)
+            if index != -1:
+                self.tree.takeTopLevelItem(index)
+                # Decrement total_items counter and update status
+                self.total_items -= 1
+                self.update_status(f"Total items: {self.total_items}")
 
     def update_status(
         self, message, interval=None, duration=None, immediate_clear=False
     ):
-        # delay = custom_delay if custom_delay is not None else 3000
-        # # Update status bar or label with a message
-        # self.status_label.setText(message)
-        # QApplication.processEvents()
-        # QTimer.singleShot(delay, lambda: self.status_label.clear())
-        # if self.stop_update:
-        #     self.status_label.clear()
 
         interval = interval if interval is not None else 3000
         duration = duration if duration is not None else 10000
