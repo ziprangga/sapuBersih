@@ -1,4 +1,4 @@
-# [text](resources/sapuBersih.icns) sapuBersih
+# [![sapuBersih Icon](assets/sapuBersih.png)] sapuBersih
 
 **sapuBersih** is a cleanup tool designed to safely remove applications and their associated files or folders from the macOS system.
 
