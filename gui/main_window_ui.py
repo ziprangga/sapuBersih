@@ -64,7 +64,9 @@ class Ui_MainWindow(object):
         self.selected_file_label.setText(QCoreApplication.translate("MainWindow", u"Selected file: None", None))
         self.browse_button.setText(QCoreApplication.translate("MainWindow", u"Browse", None))
         self.tree.setHeaderLabels([
-            QCoreApplication.translate("MainWindow", u"File/Folder Path", None),
+            QCoreApplication.translate("MainWindow", u"File/Folder", None),
+            QCoreApplication.translate("MainWindow", u"Path", None),
+            QCoreApplication.translate("MainWindow", u"Category", None),
             QCoreApplication.translate("MainWindow", u"Status", None)])
         self.delete_button.setText(QCoreApplication.translate("MainWindow", u"Move to Trash", None))
     # retranslateUi
