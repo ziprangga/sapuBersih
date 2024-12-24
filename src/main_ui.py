@@ -9,7 +9,7 @@ from PySide6.QtWidgets import (
     QLabel,
     QApplication,
 )
-from PySide6.QtCore import Qt, QFileInfo
+from PySide6.QtCore import Qt, QFileInfo, QTimer
 from PySide6.QtGui import QIcon, QPixmap
 from src.clean_app_logic import SapuBersihLogic
 from src.clean_junk_logic import JunkFileCleaner
@@ -41,6 +41,7 @@ class SapuBersihUI(QMainWindow, gui.main_window.Ui_MainWindow):
 
         self.status_label = QLabel()
         self.stop_update = False
+        # self.total_items = 0
 
         self.status_label = QLabel("Ready")
         self.status_label.setAlignment(Qt.AlignCenter)
@@ -102,7 +103,7 @@ class SapuBersihUI(QMainWindow, gui.main_window.Ui_MainWindow):
     def clear_tree(self):
         self.tree.clear()
 
-    def add_tree_item(self, name, path, category, writable):
+    def add_tree_item(self, name, path, category, writable, last_modified):
         status = "Accessible" if writable else "Read-Only"
 
         # Menggunakan QFileIconProvider untuk mendapatkan ikon file atau direktori
@@ -115,9 +116,58 @@ class SapuBersihUI(QMainWindow, gui.main_window.Ui_MainWindow):
         else:
             icon = icon_provider.icon(QFileIconProvider.File)
 
-        item = QTreeWidgetItem([name, path, category, status])
+        item = QTreeWidgetItem([name, path, category, status, last_modified])
         item.setIcon(0, icon)
         self.tree.addTopLevelItem(item)
+
+    def remove_tree_item(self, item):
+        if item:
+            index = self.tree.indexOfTopLevelItem(item)
+            if index != -1:
+                self.tree.takeTopLevelItem(index)
+                # Decrement total_items counter and update status
+                self.total_items -= 1
+                self.update_status(f"Total items: {self.total_items}")
+
+    def update_status(
+        self, message, interval=None, duration=None, immediate_clear=False
+    ):
+
+        interval = interval if interval is not None else 3000
+        duration = duration if duration is not None else 10000
+        self.stop_update = False
+        self.process_running = True
+        elapsed_time = 0
+        self.timer = QTimer(self)
+
+        # Function to update the status at each interval
+        def update_message():
+            nonlocal elapsed_time
+            if self.stop_update or not self.process_running or elapsed_time >= duration:
+                self.timer.stop()
+                if immediate_clear:
+                    self.status_label.clear()
+            else:
+                elapsed_time += interval
+                self.status_label.setText(message)
+                QApplication.processEvents()
+
+        # Set up the timer to call `update_message` at regular intervals
+        if self.process_running:
+            self.timer.timeout.connect(update_message)
+            self.timer.start(interval)
+
+        # Immediately show the initial message
+        self.status_label.setText(message)
+        QApplication.processEvents()
+
+    def stop_update_status(self, clear_immediately=True):
+        self.process_running = False
+        if hasattr(self, "timer") and self.timer.isActive():
+            self.timer.stop()
+        self.stop_update = True
+        if clear_immediately:
+            self.status_label.clear()
 
     # Peletakan Item
     def add_placeholder_item(self):
@@ -141,16 +191,6 @@ class SapuBersihUI(QMainWindow, gui.main_window.Ui_MainWindow):
             default,
         )
         return reply == QMessageBox.Yes
-
-    def update_status(self, message):
-        # Update status bar or label with a message
-        self.status_label.setText(message)
-        QApplication.processEvents()
-        if self.stop_update:
-            self.status_label.clear()
-
-    def stop_update_status(self):
-        self.stop_update = True
 
     def show_log(self, message):
         self.show_message("Log", message)

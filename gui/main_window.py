@@ -134,6 +134,7 @@ class Ui_MainWindow(object):
                 QCoreApplication.translate("MainWindow", "Path", None),
                 QCoreApplication.translate("MainWindow", "Category", None),
                 QCoreApplication.translate("MainWindow", "Status", None),
+                QCoreApplication.translate("MainWindow", "Last Modified", None),
             ]
         )
         self.delete_button.setText(
