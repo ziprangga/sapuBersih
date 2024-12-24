@@ -1,6 +1,3 @@
-Program: sapuBersih
-Author: zi
-
 This app was built using open-source components and inspired by privacy guides from Sunknudsen. Some of the scripts in this app adapt references from his guides, so I want to give him a big thank you!
 
 The app’s interface is kept simple using Python, with the main goal of helping my beloved wife and friends who rarely use the terminal on macOS. On top of that, this project also serves as a way for me to dive deeper into Python.
@@ -8,6 +5,10 @@ The app’s interface is kept simple using Python, with the main goal of helping
 If you're interested in using or even developing this app, feel free to download it. The source code and release versions are available on GitHub.
 
 Source Code: https://github.com/ziprangga/sapuBersih
+
+
+
+Thanks to
 
 Endless thanks to Sunknudsen—check out his GitHub here:
 https://github.com/sunknudsen/privacy-guides/tree/master/how-to-clean-uninstall-macos-apps-using-appcleaner-open-source-alternative

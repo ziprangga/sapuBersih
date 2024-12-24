@@ -1,10 +1,8 @@
 import os
 import subprocess
-from PySide6.QtWidgets import (
-    QFileDialog,
-)
+from PySide6.QtWidgets import QFileDialog
 from pathlib import Path
-from src.utility import RECEIPT_PATH
+from src.utility import ResourceManager as util
 
 
 class SapuBersihLogic:
@@ -13,7 +11,8 @@ class SapuBersihLogic:
 
     # Proses input aplikasi yang akan di delete
     def browse_application(self, app_path=None):
-        """Browse untuk mencari aplikasi .app atau menggunakan drag-and-drop."""
+        self.ui.clear_tree()
+        # Browse untuk mencari aplikasi .app atau menggunakan drag-and-drop
         if app_path:
             # Proses langsung jika path diberikan (drag-and-drop)
             app_name = os.path.basename(app_path).replace(".app", "")
@@ -22,9 +21,7 @@ class SapuBersihLogic:
                 # Jika proses tidak diizinkan, hentikan eksekusi
             else:
                 if not Path(app_path).is_dir() or not app_path.endswith(".app"):
-                    self.ui.show_error(
-                        "Invalid File", "Selected file is not a valid .app bundle."
-                    )
+                    self.ui.show_error("Selected file is not a valid .app bundle.")
                     return
         else:
             # Logika untuk membuka dialog file
@@ -46,8 +43,7 @@ class SapuBersihLogic:
             ):
                 self.kill_processes(processes)
             else:
-                self.ui.show_message(
-                    "Info",
+                self.ui.show_error(
                     "The application is still running. Please close it manually.",
                 )
                 return False
@@ -71,7 +67,9 @@ class SapuBersihLogic:
             # komentar ini jika menggunakan fitur sudo
             try:
                 subprocess.run(["kill", pid], check=True)
-                self.ui.show_message(f"Successfully killed process with PID: {pid}")
+                self.ui.show_message(
+                    "Success", f"Successfully killed process with PID: {pid}"
+                )
             except subprocess.CalledProcessError:
                 self.ui.show_error(
                     f"Failed to kill process with PID: {pid}. It may have already stopped."
@@ -79,12 +77,11 @@ class SapuBersihLogic:
 
     # Menjalankan perintah pencarian file yang terkait dengan aplikasi
     def clean_application(self, app_path):
-        self.ui.clear_tree()
 
         # Ambil bundle identifier
         bundle_identifier = self.get_bundle_identifier(app_path)
         if not bundle_identifier:
-            self.ui.show_error("Error", "Cannot find app bundle identifier.")
+            self.ui.show_error("Cannot find app bundle identifier.")
             return
 
         # Dapatkan nama aplikasi
@@ -97,7 +94,10 @@ class SapuBersihLogic:
 
         if related_paths:
             for path in related_paths:
-                self.ui.add_tree_item(path, os.access(path, os.W_OK))
+                name_file = os.path.basename(path)
+                self.ui.add_tree_item(
+                    name_file, path, bundle_identifier, os.access(path, os.W_OK)
+                )
         else:
             self.ui.add_placeholder_item()
 
@@ -116,29 +116,34 @@ class SapuBersihLogic:
             )
             return output.decode().strip()
         except subprocess.CalledProcessError as e:
-            self.ui.show_error("Error", f"Failed to fetch bundle identifier: {str(e)}")
+            self.ui.show_error(f"Failed to fetch bundle identifier: {str(e)}")
         except FileNotFoundError as e:
-            self.ui.show_error("Error", f"Info.plist not found: {str(e)}")
+            self.ui.show_error(f"Info.plist not found: {str(e)}")
         return None
 
     # Pencarian berdasarkan direktori cache (.bom) atau log aplikasi jika ditemukan akan di simpan di desktop
     def find_and_save_bom_logs(self, app_name, bundle_identifier):
 
         paths = []
+
+        receipt_location = util.receipt_paths()
         # Cari .bom files untuk app_name
-        for path in RECEIPT_PATH.rglob(f"*{app_name}*.bom"):
-            paths.append(str(path))
+        for path in receipt_location:
+            if path.exists() and path.is_dir():
+                for match in path.rglob(f"*{app_name}*.bom"):
+                    paths.append(str(path))
 
         # Cari .bom files untuk bundle_identifier
-        for path in RECEIPT_PATH.rglob(f"*{bundle_identifier}*.bom"):
-            paths.append(str(path))
+        for path in receipt_location:
+            if path.exists() and path.is_dir():
+                for match in path.rglob(f"*{bundle_identifier}*.bom"):
+                    paths.append(str(path))
 
         # Hapus duplikat
         paths = list(set(paths))
 
         # Jika ada file .bom ditemukan, simpan ke desktop
         if paths:
-            print("Saving bill of material logs to desktop…")
             desktop_path = os.path.expanduser(f"~/Desktop/{app_name}")
             os.makedirs(desktop_path, exist_ok=True)
 
@@ -154,66 +159,20 @@ class SapuBersihLogic:
                             stdout=bom_log_file,
                             check=True,
                         )
-                    self.ui.show_message(f"Saved: {bom_log_path}")
+                    self.ui.show_message("Info", f"Saved: {bom_log_path}")
                 except subprocess.CalledProcessError as e:
-                    self.ui.show_error("Error", f"Failed to process BOM log: {str(e)}")
+                    self.ui.show_error(f"Failed to process BOM log: {str(e)}")
                 except FileNotFoundError as e:
-                    self.ui.show_error("Error", f"BOM file not found: {str(e)}")
+                    self.ui.show_error(f"BOM file not found: {str(e)}")
         else:
-            self.ui.show_message("No .bom files found.")
+            self.ui.show_message("Info", "No .bom files found.")
 
     # Pencarian pada direktori yang terkait
     def find_app_data(self, app_name, bundle_identifier):
-        def get_darwin_user_cache_dir():
-            result = subprocess.run(
-                ["getconf", "DARWIN_USER_CACHE_DIR"], capture_output=True, text=True
-            )
-            return result.stdout.strip()
 
-        def get_darwin_user_temp_dir():
-            result = subprocess.run(
-                ["getconf", "DARWIN_USER_TEMP_DIR"], capture_output=True, text=True
-            )
-            return result.stdout.strip()
-
-        # Daftar lokasi yang relevan untuk mencari data aplikasi
-        locations = [
-            Path.home() / "Library",
-            Path.home() / "Library/Application Scripts",
-            Path.home() / "Library/Application Support",
-            Path.home() / "Library/Application Support/CrashReporter",
-            Path.home() / "Library/Containers",
-            Path.home() / "Library/Caches",
-            Path.home() / "Library/HTTPStorages",
-            Path.home() / "Library/Group Containers",
-            Path.home() / "Library/Internet Plug-Ins",
-            Path.home() / "Library/LaunchAgents",
-            Path.home() / "Library/Logs",
-            Path.home() / "Library/Preferences",
-            Path.home() / "Library/Preferences/ByHost",
-            Path.home() / "Library/Saved Application State",
-            Path.home() / "Library/WebKit",
-            Path("/Library"),
-            Path("/Library/Application Support"),
-            Path("/Library/Application Support/CrashReporter"),
-            Path("/Library/Caches"),
-            Path("/Library/Extensions"),
-            Path("/Library/Internet Plug-Ins"),
-            Path("/Library/LaunchAgents"),
-            Path("/Library/LaunchDaemons"),
-            Path("/Library/Logs"),
-            Path("/Library/Preferences"),
-            Path("/Library/PrivilegedHelperTools"),
-            Path("/private/var/db/receipts"),
-            Path("/usr/local/bin"),
-            Path("/usr/local/etc"),
-            Path("/usr/local/opt"),
-            Path("/usr/local/sbin"),
-            Path("/usr/local/share"),
-            Path("/usr/local/var"),
-            Path(get_darwin_user_cache_dir()),  # Dari getconf
-            Path(get_darwin_user_temp_dir()),  # Dari getconf
-        ]
+        locations = util.scan_associated()
+        locations.append(util.get_darwin_user_cache_dir(as_path=True))
+        locations.append(util.get_darwin_user_temp_dir(as_path=True))
 
         paths = set()
 
@@ -233,7 +192,7 @@ class SapuBersihLogic:
 
     # Membuka lokasi file yang telah ditemukan dan ada di list
     def open_selected_location(self, item, column):
-        selected_path = item.text(0)
+        selected_path = item.text(1)
         if os.path.exists(selected_path):
             try:
                 subprocess.run(
@@ -247,9 +206,9 @@ class SapuBersihLogic:
                     ["osascript", "-e", 'tell application "Finder" to activate']
                 )
             except Exception as e:
-                self.ui.show_error("Error", f"Failed to open location: {e}")
+                self.ui.show_error(f"Failed to open location: {e}")
         else:
-            self.ui.show_error("Error", f"Path not found: {selected_path}")
+            self.ui.show_error(f"Path not found: {selected_path}")
 
     # Memindahkan file/folder ke trash secara keseluruhan atau yang dipilih
     def move_to_trash(self):
@@ -278,20 +237,18 @@ class SapuBersihLogic:
             if selected_items
             else f"Move all {len(items_to_delete)} files/folders to trash?"
         )
-        confirm = self.ui.show_question(self.ui, confirm_message)
+        confirm = self.ui.show_question(confirm_message)
         if confirm:
 
             success_items = []
             # success_count = 0
             for item in items_to_delete:
-                path = item.text(0)
+                path = item.text(1)
                 if not os.path.exists(path):
-                    self.ui.show_error("Invalid Path", f"Path does not exist: {path}")
+                    self.ui.show_error(f"Path does not exist: {path}")
                     continue
                 if not os.access(path, os.W_OK):
-                    self.ui.show_error(
-                        "Permission Denied", f"No permission to delete: {path}"
-                    )
+                    self.ui.show_error(f"Permission Denied: {path}")
                     continue
 
                 try:
@@ -304,16 +261,14 @@ class SapuBersihLogic:
                         ],
                         check=True,
                     )
-                    success_items.append(item)  # Tambahkan item ke daftar keberhasilan
+                    success_items.append(item)
                     # success_count += 1
                 except subprocess.CalledProcessError as e:
                     self.ui.show_error(
-                        "Error",
                         f"Failed to move to trash: {path}\nError: {str(e)}",
                     )
                 except Exception as e:
                     self.ui.show_error(
-                        "Error",
                         f"Unexpected error while deleting: {path}\nError: {str(e)}",
                     )
         else:

@@ -33,7 +33,7 @@ exe = EXE(
     codesign_identity=None,
     entitlements_file=None,
     version='version_info.txt',
-    icon=['resources/sapu_bersih.icns'],
+    icon=['resources/sapuBersih.icns'],
 )
 coll = COLLECT(
     exe,
@@ -47,16 +47,16 @@ coll = COLLECT(
 app = BUNDLE(
     coll,
     name='sapuBersih.app',
-    icon='resources/sapu_bersih.icns',
+    icon='resources/sapuBersih.icns',
     bundle_identifier='com.example.sapuBersih',
-    version='1.0.0',
+    version='1.5.0',
     info_plist={
         'NSPrincipalClass': 'NSApplication',
         'NSAppleScriptEnabled': False,
         'NSHighResolutionCapable': True,
         'CFBundleName': 'sapuBersih',
-        'CFBundleShortVersionString': '1.0',
-        'CFBundleVersion': '1.0.0',  
+        'CFBundleShortVersionString': '1.5',
+        'CFBundleVersion': '1.5.0',  
         'CFBundleIdentifier': 'com.example.sapuBersih',
     },
 )

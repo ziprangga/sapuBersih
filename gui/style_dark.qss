@@ -1,0 +1,79 @@
+/* Dark Theme */
+
+/* Main Window */
+QMainWindow {
+    background-color: #323232;
+    color: #ffffff;
+}
+
+/* QLabel (Selected File Label) */
+QLabel {
+    background-color: #00323232;
+    color: #ffffff;
+}
+
+/* QCheckBox (Include Files Checkbox) */
+QCheckBox {
+    background-color: #00000000; 
+    color: #ffffff;
+    margin-bottom: 10px;
+    
+}
+
+/* QPushButton (macOS-like Buttons) */
+QPushButton {
+    background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 #002340, stop:1 #00132D);
+    color: #ffffff; 
+    border: 1px solid #00172C; 
+    border-radius: 6px; 
+    padding: 6px 12px;
+    font: bold 13px "Helvetica";
+    min-width: 80px;
+}
+QPushButton:hover {
+    background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 #0056b3, stop:1 #003c8e); 
+    border: 1px solid #002752; 
+}
+QPushButton:pressed {
+    background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 #007BFF, stop:1 #0056b3);
+    border: 1px solid #001f3d; 
+}
+
+/* QTreeWidget (Tree) */
+QTreeWidget {
+    background-color: #2a2a2a; 
+    color: #ffffff; 
+    alternate-background-color: #3a3a3a;
+    border: 1px solid #000000;
+}
+QTreeWidget::item:selected {
+    background-color: #314f78; 
+    color: #ffffff; 
+}
+
+/* QPushButton#delete_button */
+QPushButton#delete_button {
+    background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 #530009, stop:1 #2B0004); 
+    color: #ffffff; 
+    border: 1px solid #530009; 
+    border-radius: 6px; 
+    padding: 6px 12px;
+    font: bold 13px "Helvetica";
+    min-width: 80px;
+}
+QPushButton#delete_button:hover {
+    background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 #8e1023, stop:1 #67000d); 
+    border: 1px solid #4d0008; 
+}
+QPushButton#delete_button:pressed {
+    background-color: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 #b5171e, stop:1 #8e1023); 
+    border: 1px solid #330004; 
+}
+
+
+/* Tooltip Styling */
+QToolTip {
+    background-color: #ffffff; 
+    color: #000000; 
+    border: 1px solid #989898;
+}
