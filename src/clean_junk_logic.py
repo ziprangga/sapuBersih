@@ -24,18 +24,14 @@ class JunkFileCleaner:
 
     def include_apple_app(self):
         status = self.ui.include_file_checkbox.isChecked()
-
         apple_app_patterns = util.include_apple()
-
         paths = set()
-
         if not status:
             # If status is unchecked, exclude Apple app-related patterns
             paths.update(apple_app_patterns)
         else:
             # If status is checked, include Apple app-related patterns
             paths.difference_update(apple_app_patterns)
-
         return list(paths)
 
     def find_files_by_pattern(self, locations, patterns):
@@ -72,7 +68,12 @@ class JunkFileCleaner:
         for file in files:
             base_name = os.path.basename(file)
             writable = os.access(file, os.W_OK)
-            self.ui.add_tree_item(base_name, file, category, writable)
+            # Get the last modified date of the file
+            file_path = Path(file)
+            last_modified = datetime.fromtimestamp(file_path.stat().st_mtime).strftime(
+                "%Y-%m-%d %H:%M:%S"
+            )
+            self.ui.add_tree_item(base_name, file, category, writable, last_modified)
 
     def scan_junk_files(self):
         self.ui.clear_tree()

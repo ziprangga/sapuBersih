@@ -103,7 +103,7 @@ class SapuBersihUI(QMainWindow, gui.main_window.Ui_MainWindow):
     def clear_tree(self):
         self.tree.clear()
 
-    def add_tree_item(self, name, path, category, writable):
+    def add_tree_item(self, name, path, category, writable, last_modified):
         status = "Accessible" if writable else "Read-Only"
 
         # Menggunakan QFileIconProvider untuk mendapatkan ikon file atau direktori
@@ -116,7 +116,7 @@ class SapuBersihUI(QMainWindow, gui.main_window.Ui_MainWindow):
         else:
             icon = icon_provider.icon(QFileIconProvider.File)
 
-        item = QTreeWidgetItem([name, path, category, status])
+        item = QTreeWidgetItem([name, path, category, status, last_modified])
         item.setIcon(0, icon)
         self.tree.addTopLevelItem(item)
 
